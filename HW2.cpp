@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
-
 using namespace std;
 
 void printHeader()
@@ -19,6 +18,7 @@ void printHeader()
 	
 	cout << "\n\nHello. Welcome to the CSOPESY Command Line!";
 	cout << "\nType 'exit' to quit, 'clear' to clear the screen"; 
+	cout << "\n\nAvailable commands: intialize, screen, scheduler-test, scheduler-stop, report-util";
 	cout << "\n\nEnter a command: ";
 }
 
@@ -27,31 +27,36 @@ void userInput(const string& command)
 	if (command == "initialize")
 	{
 		cout << "initialize command recognized. Doing something.\n";
+		cout << "\nEnter a command: ";
 	}
 	
 	else if (command == "screen")
 	{
 		cout << "screen command recognized. Doing something.\n";
+		cout << "\nEnter a command: ";
 	}
 	
-	else if (command == "schedule-test")
+	else if (command == "scheduler-test")
 	{
-		cout << "schedule-test command recognized. Doing something.\n";
+		cout << "scheduler-test command recognized. Doing something.\n";
+		cout << "\nEnter a command: ";
 	}
 	
-	else if (command == "schedule-stop")
+	else if (command == "scheduler-stop")
 	{
-		cout << "schedule-stop command recognized. Doing something.\n";
+		cout << "scheduler-stop command recognized. Doing something.\n";
+		cout << "\nEnter a command: ";
 	}
 	
 	else if (command == "report-util")
 	{
 		cout << "report-util command recognized. Doing something.\n";
+		cout << "\nEnter a command: ";
 	}
 	
 	else if (command == "clear")
 	{
-		system("clear || cls");
+		system("CLS");
 		printHeader();
 	}
 	
@@ -64,8 +69,8 @@ void userInput(const string& command)
 	else
 	{
 		cout << "Unknown command.";
+		cout << "\n\nEnter a command: ";
 	}
-	
 }
 
 int main()
