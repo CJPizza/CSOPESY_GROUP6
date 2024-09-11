@@ -1,4 +1,5 @@
 #include <iostream>
+#include <windows.h>
 #include <string>
 #include <cstdlib>
 using namespace std;
@@ -16,9 +17,13 @@ void printHeader()
 	cout << " \\____|____/ \\___/|_|   |_____|____/ |_|";
 	cout << "\n                  GROUP 6";
 	
-	cout << "\n\nHello. Welcome to the CSOPESY Command Line!";
-	cout << "\nType 'exit' to quit, 'clear' to clear the screen"; 
-	cout << "\n\nAvailable commands: intialize, screen, scheduler-test, scheduler-stop, report-util";
+	HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(color, 10);
+	cout << "\n\nHello. Welcome to the CSOPESY Command Line!" << endl;
+	SetConsoleTextAttribute(color, 14);
+	cout << "\nType 'exit' to quit, 'clear' to clear the screen" << endl;
+	SetConsoleTextAttribute(color, 7);
+	cout << "\n\nAvailable commands: intialize, screen, scheduler-test, scheduler-stop, report-util" << endl;
 	cout << "\n\nEnter a command: ";
 }
 
@@ -86,3 +91,4 @@ int main()
 	
 	return 0;
 }
+
