@@ -21,10 +21,9 @@ void printHeader()
 	SetConsoleTextAttribute(color, 10);
 	cout << "\n\nHello. Welcome to the CSOPESY Command Line!" << endl;
 	SetConsoleTextAttribute(color, 14);
-	cout << "\nType 'exit' to quit, 'clear' to clear the screen" << endl;
+	cout << "Type 'exit' to quit, 'clear' to clear the screen" << endl;
 	SetConsoleTextAttribute(color, 7);
-	cout << "\n\nAvailable commands: intialize, screen, scheduler-test, scheduler-stop, report-util" << endl;
-	cout << "\n\nEnter a command: ";
+	cout << "Enter a command: ";
 }
 
 void userInput(const string& command)
