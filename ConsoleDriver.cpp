@@ -10,8 +10,13 @@ typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
 
 ConsoleDriver* ConsoleDriver::sharedInstance = nullptr;
-ConsoleDriver* ConsoleDriver::getInstance()
+
+ConsoleDriver* ConsoleDriver::getInstance() 
 {
+    if (sharedInstance == nullptr) 
+    {
+        sharedInstance = new ConsoleDriver();
+    }
     return sharedInstance;
 }
 
@@ -50,7 +55,7 @@ void ConsoleDriver::process() const
 
 void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 {
-    if(this->consoleTable.contains(screenRef->getName())) 
+    if (this->consoleTable.find(screenRef->getName()) != this->consoleTable.end())
     {
         std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
         return;
@@ -61,7 +66,7 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 
 void ConsoleDriver::unregisterScreen(String screenName) 
 {
-    if (this->consoleTable.contains(screenName)) {
+    if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
         this->consoleTable.erase(screenName);
     }
     else {
@@ -76,8 +81,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
 
 void ConsoleDriver::switchConsole(String consoleName)
 {
-    if(this->consoleTable.contains(consoleName))
-    {
+    if (this->consoleTable.find(consoleName) != this->consoleTable.end()) {
         system("cls");
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
@@ -93,7 +97,7 @@ void ConsoleDriver::switchConsole(String consoleName)
 
 void ConsoleDriver::switchToScreen(String screenName)
 {
-    if (this->consoleTable.contains(screenName)) {
+    if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
         system("cls");
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[screenName];
@@ -153,3 +157,4 @@ ConsoleDriver::ConsoleDriver()
 
     this->switchConsole(MAIN_CONSOLE);
 }
+
