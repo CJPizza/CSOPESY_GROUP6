@@ -1,6 +1,8 @@
-#include "console.h"
+#pragma once
 #include <memory>
+
 #include "AConsole.h"
+#include "Process.h"
 
 // Actual implementation of the console 
 // drawing of screen (process names and such)
