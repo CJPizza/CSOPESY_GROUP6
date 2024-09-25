@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include <windows.h>
-#include <iostream>
 #include <memory>
 
 #include "AConsole.h"
@@ -25,13 +24,17 @@ class ConsoleDriver {
         void registerScreen(std::shared_ptr<BaseScreen> screenRef);
         void switchToScreen(String screenName);
         void unregisterScreen(String screenName);
+
         void switchConsole(String screenName);
+        void returnToPreviousConsole(); 
 
         void exitApplication();
         bool isRunning() const;
 
         HANDLE getConsoleHandle() const;
 
+        // DEBUG PURPOSES
+        void printTest() const;
         
     private:
         ConsoleDriver();

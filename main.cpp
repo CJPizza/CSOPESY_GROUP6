@@ -46,10 +46,6 @@ void userInput(const String& sInput)
     s_in >> command;
     s_in >> param;
 
-    std::cerr << command << std::endl;
-
-    std::cerr << param;
-
     if (command == "initialize")
     {
         std::cerr << "initialize command recognized. Doing something.\n";
@@ -61,6 +57,7 @@ void userInput(const String& sInput)
         std::cerr << "initialize command recognized. Doing something.\n";
         if (param == "-s") {
             s_in >> name;
+
         } else if (param == "-r") {
             std::cerr << "screen -r command";
 

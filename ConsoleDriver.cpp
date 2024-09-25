@@ -1,13 +1,10 @@
 #include <iostream>
-#include <string>
-
 
 #include "ConsoleDriver.h"
 #include "MainConsole.h"
 #include "AConsole.h"
 #include "BaseScreen.h"
 
-// #include <unordered_map>
 //
 typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
@@ -30,7 +27,7 @@ void ConsoleDriver::destroy()
 
 HANDLE ConsoleDriver::getConsoleHandle() const
 {
-    return this->getConsoleHandle();
+    return this->consoleHandle;
 }
 
 void ConsoleDriver::drawConsole() const
@@ -62,6 +59,16 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
     this->consoleTable[screenRef->getName()] = screenRef;
 }
 
+void ConsoleDriver::unregisterScreen(String screenName) 
+{
+    if (this->consoleTable.contains(screenName)) {
+        this->consoleTable.erase(screenName);
+    }
+    else {
+        std::cerr << "Unable to unregister " << screenName << std::endl;
+    }
+}
+
 
 /*
  * Console name is marquee, main and memory
@@ -75,6 +82,8 @@ void ConsoleDriver::switchConsole(String consoleName)
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
         this->currentConsole->onEnabled();
+
+        // std::cerr << this->currentConsole->getName();
     }
     else 
     {
@@ -95,6 +104,14 @@ void ConsoleDriver::switchToScreen(String screenName)
     }
 }
 
+void ConsoleDriver::returnToPreviousConsole()
+{
+    if (this->previousConsole != nullptr) {
+        this->switchConsole(this->previousConsole->getName());
+        this->previousConsole = nullptr;
+    }
+}
+
 /*
  * Handles going to menu? if inside a submenu and assings running to fase if inside a main console
  */
@@ -110,6 +127,17 @@ void ConsoleDriver::exitApplication()
     }
 }
 
+bool ConsoleDriver::isRunning() const
+{
+    return this->running;
+}
+
+// DEBUG purposes
+void ConsoleDriver::printTest() const
+{
+    std::cerr << "printTest Function called" << std::endl;
+}
+
 ConsoleDriver::ConsoleDriver()
 {
     this->running = true;
@@ -120,7 +148,6 @@ ConsoleDriver::ConsoleDriver()
     // const std::shared_ptr<MarqueeConsole> mainConsole = std::make_shared<MarqueeConsole>();
     // const std::shared_ptr<SchedulingConsole> mainConsole = std::make_shared<SchedulingConsole>();
     // const std::shared_ptr<MemorySimulationConsole> mainConsole = std::make_shared<MemorySimulationConsole>();
-
 
     this->consoleTable[MAIN_CONSOLE] = mainConsole;
 

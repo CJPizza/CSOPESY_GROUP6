@@ -18,6 +18,11 @@ int Process::getCurrentIL()
     return this->currentIL;
 }
 
+Process::String Process::getProcessName() const
+{
+    return this->processName;
+}
+
 int Process::getLinesCode()
 {
     return this->getLinesCode();

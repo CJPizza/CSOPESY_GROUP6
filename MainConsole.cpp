@@ -1,8 +1,9 @@
-#include "MainConsole.h"
-#include "ConsoleDriver.h"
-
 #include <cstdio>
 #include <iostream>
+#include <windows.h>
+
+#include "MainConsole.h"
+#include "ConsoleDriver.h"
 
 MainConsole::MainConsole(): AConsole("Main")
 {
@@ -12,7 +13,13 @@ MainConsole::MainConsole(): AConsole("Main")
 void MainConsole::onEnabled()
 {
     this->display();
-    // this->process();
+    // ConsoleDriver::getInstance()->printTest();
+    // ConsoleDriver::getInstance()->drawConsole();
+}
+
+void MainConsole::process() 
+{
+
 }
 
 void MainConsole::display()
@@ -27,12 +34,12 @@ void MainConsole::display()
     std::cerr << "\n";
     std::cerr << " \\____|____/ \\___/|_|   |_____|____/ |_|";
     std::cerr << "\n                  GROUP 6";
-    HANDLE color = GetStdHandle(STD_OUTPUT_HANDLE);
-    ConsoleDriver::getInstance()->getConsoleHandle().SetConsoleTextAttribute(color, 10);
+    // HANDLE color = ConsoleDriver::getInstance()->getConsoleHandle();
+    // SetConsoleTextAttribute(color, 10);
     std::cerr << "\n\nHello. Welcome to the CSOPESY Command Line!" << std::endl;
-    ConsoleDriver::getInstance()->getConsoleHandle().SetConsoleTextAttribute(color, 10);
+    // SetConsoleTextAttribute(color, 10);
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
-    SetConsoleTextAttribute(color, 7);
+    // SetConsoleTextAttribute(color, 7);
     std::cerr << "Enter a command: ";
 }
 
