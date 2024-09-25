@@ -1,3 +1,4 @@
+#pragma once
 #include "AConsole.h"
 
 class MainConsole : public AConsole 

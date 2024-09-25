@@ -1,10 +1,15 @@
+#include <iostream>
+#include <string>
+
+
 #include "ConsoleDriver.h"
 #include "MainConsole.h"
 #include "AConsole.h"
 #include "BaseScreen.h"
-#include <iostream>
-// #include <unordered_map>
 
+// #include <unordered_map>
+//
+typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
 
 ConsoleDriver* ConsoleDriver::sharedInstance = nullptr;
@@ -23,7 +28,7 @@ void ConsoleDriver::destroy()
     delete sharedInstance;
 }
 
-void ConsoleDriver::getConsoleHandle() const
+HANDLE ConsoleDriver::getConsoleHandle() const
 {
     return this->getConsoleHandle();
 }
@@ -39,7 +44,7 @@ void ConsoleDriver::drawConsole() const
 void ConsoleDriver::process() const
 {
     if (this->currentConsole != nullptr) {
-        this->currentConsole->process
+        this->currentConsole->process();
     }
     else {
         std::cerr << "There is no assigned console. Please check." << std::endl;
@@ -50,23 +55,13 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 {
     if(this->consoleTable.contains(screenRef->getName())) 
     {
-        std::cerr << "Screen name " << screenRef->getName() << "already exists. Please use a different name." << std::endl;
+        std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
         return;
     }
 
     this->consoleTable[screenRef->getName()] = screenRef;
 }
 
-void ConsoleDriver::switchToScreen(String screenName)
-{
-    if(this->consoleTable.contains(screenName))
-    {
-        system("cls");
-        this->previousConsole = this->currentConsole;
-        this->currentConsole = this->consoleTable[screenName];
-        this->currentConsole->onEnabled;
-    }
-}
 
 /*
  * Console name is marquee, main and memory
@@ -86,6 +81,23 @@ void ConsoleDriver::switchConsole(String consoleName)
         std::cerr << "Console name " << consoleName << " not found. Was it initialized?" << std::endl;
     }
 }
+
+void ConsoleDriver::switchToScreen(String screenName)
+{
+    if (this->consoleTable.contains(screenName)) {
+        system("cls");
+        this->previousConsole = this->currentConsole;
+        this->currentConsole = this->consoleTable[screenName];
+        this->currentConsole->onEnabled();
+    }
+    else {
+        std::cerr << "Screen name " << screenName << " not found." << std::endl;
+    }
+}
+
+/*
+ * Handles going to menu? if inside a submenu and assings running to fase if inside a main console
+ */
 
 void ConsoleDriver::exitApplication() 
 {

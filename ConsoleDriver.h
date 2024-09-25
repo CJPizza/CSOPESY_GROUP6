@@ -25,6 +25,7 @@ class ConsoleDriver {
         void registerScreen(std::shared_ptr<BaseScreen> screenRef);
         void switchToScreen(String screenName);
         void unregisterScreen(String screenName);
+        void switchConsole(String screenName);
 
         void exitApplication();
         bool isRunning() const;

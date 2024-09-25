@@ -5,7 +5,7 @@ AConsole::AConsole(String consoleName) {
     this->name = consoleName;
 }
 
-String AConsole::getName()
+AConsole::String AConsole::getName()
 {
     return this->name;
 }
