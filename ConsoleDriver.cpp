@@ -6,8 +6,6 @@
 #include "BaseScreen.h"
 
 //
-typedef std::string String;
-const String MAIN_CONSOLE = "MAIN_CONSOLE";
 
 ConsoleDriver* ConsoleDriver::sharedInstance = nullptr;
 
@@ -22,7 +20,12 @@ ConsoleDriver* ConsoleDriver::getInstance()
 
 void ConsoleDriver::initialize()
 {
-    sharedInstance = new ConsoleDriver();
+    // sharedInstance = new ConsoleDriver();
+    if (sharedInstance == nullptr) {
+        sharedInstance = new ConsoleDriver();
+    } else {
+        std::cerr << "ConsoleDriver already initialized." << std::endl;
+    }
 }
 
 void ConsoleDriver::destroy()

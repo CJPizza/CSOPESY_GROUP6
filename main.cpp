@@ -34,7 +34,9 @@
 
 typedef std::string String;
 
-// TODO: handle userInput in a InputHandler class
+// TODO: other classes when invoking ConsoleDriver::getInstance() seems to return a null_ptr 
+// which causes issues i.e. HANDLE not being returned from ConsoleDriver causing it to crash
+//
 // void userInput(const String& sInput)
 // {
 

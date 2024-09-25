@@ -5,9 +5,11 @@
 #include <windows.h>
 #include <memory>
 
-#include "AConsole.h"
 #include "BaseScreen.h"
 #include "MainConsole.h"
+
+typedef std::string String;
+const String MAIN_CONSOLE = "MAIN_CONSOLE";
 
 class ConsoleDriver {
     public:

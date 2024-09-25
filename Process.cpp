@@ -6,6 +6,7 @@ Process::Process(String nameIn)
     : uid(newUID++)
 {
     this->processName = nameIn;
+    this->linesCode = 50;
 }
 
 int Process::getUid() 

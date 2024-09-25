@@ -1,15 +1,18 @@
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <windows.h>
 #include <sstream>
 #include <string>
 
 #include "MainConsole.h"
+#include "BaseScreen.h"
 #include "ConsoleDriver.h"
+#include "Process.h"
 
-MainConsole::MainConsole(): AConsole("Main")
+MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
-    this->name = "Main";
+    this->name = MAIN_CONSOLE;
 }
 
 void MainConsole::onEnabled()
@@ -43,12 +46,19 @@ void MainConsole::process()
             s_in >> name;
             //std::cerr << "screen -s command: " << name << std::endl;
             //screen -s <name> : creates then add to table then go to new screeen
-            
+
+            std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
+            std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, name);
+            ConsoleDriver::getInstance()->registerScreen(newScreen);
         }
         else if (param == "-r") {
             std::cerr << "screen -r command\n";
             //screen -r <name>: goes back to that same screen
             //i think search in console table
+            s_in >> name;
+            if (name.length() > 0) {
+                ConsoleDriver::getInstance()->switchToScreen(name);
+            }
         }
         else if (param == "-ls") {
             std::cerr << "screen -ls command\n";
