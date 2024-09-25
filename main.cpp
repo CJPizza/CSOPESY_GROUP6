@@ -5,15 +5,19 @@
 #include "AConsole.h"
 #include "ConsoleDriver.h"
 
+
 // void printHeader()
 // {
-//     std::cerr << "  ____ ____   ___  ____  _____ ______   __";
+//     std::cerr << "  __
+//__   _  __  ___
+//____   __";
 //     std::cerr << "\n";
 //     std::cerr << " / ___/ ___| / _ \\|  _ \\| ____/ ___\\ \\ / /";
 //     std::cerr << "\n";
-//     std::cerr << "| |   \\___ \\| | | | |_) |  _| \\___ \\\\ V / ";
+//     std::cerr << "| |   \\___ \\| | | | |_) |  | \\__ \\\\ V / ";
 //     std::cerr << "\n";
-//     std::cerr << "| |___ ___) | |_| |  __/| |___ ___) || |";
+//     std::cerr << "| |___ _) | |_| |  _/| |__
+//_) || |";
 //     std::cerr << "\n";
 //     std::cerr << " \\____|____/ \\___/|_|   |_____|____/ |_|";
 //     std::cerr << "\n                  GROUP 6";
@@ -31,76 +35,79 @@
 typedef std::string String;
 
 // TODO: handle userInput in a InputHandler class
-void userInput(const String& sInput)
-{
+// void userInput(const String& sInput)
+// {
 
-    // uses stringstream to slice input into substring
-    std::stringstream s_in(sInput);
+//     // uses stringstream to slice input into substring
+//     std::stringstream s_in(sInput);
 
-    String command;
-    String param;
-    String name;
+//     String command;
+//     String param;
+//     String name;
 
-    // assumes command parameter will only be one use while loop if more than one
-    s_in >> command;
-    s_in >> param;
+//     // assumes command parameter will only be one use while loop if more than one
+//     s_in >> command;
+//     s_in >> param;
 
-    if (command == "initialize")
-    {
-        std::cerr << "initialize command recognized. Doing something.\n";
-        std::cerr << "\nEnter a command: ";
-    }
+//     if (command == "initialize")
+//     {
+//         std::cerr << "initialize command recognized. Doing something.\n";
+//         std::cerr << "\nEnter a command: ";
+//     }
 
-    else if (command == "screen")
-    {
-        std::cerr << "initialize command recognized. Doing something.\n";
-        if (param == "-s") {
-            s_in >> name;
+//     else if (command == "screen")
+//     {
+        
+//         if (param == "-s") {
+//             s_in >> name;
+            
 
-        } else if (param == "-r") {
-            std::cerr << "screen -r command";
+//         } else if (param == "-r") {
+//             std::cerr << "screen -r command";
 
-        } else if (param =="-ls") {
-            std::cerr << "screen -ls command";
-        }
-        std::cerr << "\nEnter a command: ";
-    }
+//         } else if (param =="-ls") {
+//             std::cerr << "screen -ls command";
+//         }
+//         std::cerr << "\nEnter a command: ";
+//     }
 
-    else if (command == "scheduler-test")
-    {
-        std::cerr << "scheduler-test command recognized. Doing something.\n";
-        std::cerr << "\nEnter a command: ";
-    }
+//     else if (command == "scheduler-test")
+//     {
+//         std::cerr << "scheduler-test command recognized. Doing something.\n";
+//         std::cerr << "\nEnter a command: ";
+//     }
 
-    else if (command == "scheduler-stop")
-    {
-        std::cerr << "scheduler-stop command recognized. Doing something.\n";
-        std::cerr << "\nEnter a command: ";
-    }
+//     else if (command == "scheduler-stop")
+//     {
+//         std::cerr << "scheduler-stop command recognized. Doing something.\n";
+//         std::cerr << "\nEnter a command: ";
+//     }
 
-    else if (command == "report-util")
-    {
-        std::cerr << "report-util command recognized. Doing something.\n";
-        std::cerr << "\nEnter a command: ";
-    }
+//     else if (command == "report-util")
+//     {
+//         std::cerr << "report-util command recognized. Doing something.\n";
+//         std::cerr << "\nEnter a command: ";
+//     }
 
-    else if (command == "clear")
-    {
-    }
+//     else if (command == "clear")
+//     {
+//         system("CLS");
+//         //print the thingy
+//     }
 
-    else if (command == "exit")
-    {
-        std::cerr << "exit command recognized. Doing something.\n";
-        ConsoleDriver::getInstance()->exitApplication();
-        exit(0);
-    }
+//     else if (command == "exit")
+//     {
+//         std::cerr << "exit command recognized. Doing something.\n";
+//         ConsoleDriver::getInstance()->exitApplication();
+//         exit(0);
+//     }
 
-    else
-    {
-        std::cerr << "Unknown command.";
-        std::cerr << "\n\nEnter a command: ";
-    }
-}
+//     else
+//     {
+//         std::cerr << "Unknown command.";
+//         std::cerr << "\n\nEnter a command: ";
+//     }
+// }
 
 int main()
 {	
@@ -112,8 +119,9 @@ int main()
     while (running)
     {
         
-        getline(std::cin, sInput);
-        userInput(sInput);
+        // getline(std::cin, sInput);
+        // userInput(sInput);
+        ConsoleDriver::getInstance()->process(); 
 
         running = ConsoleDriver::getInstance()->isRunning();
     }
@@ -122,5 +130,3 @@ int main()
 
     return 0;
 }
-
-

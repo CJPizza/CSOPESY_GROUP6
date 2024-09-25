@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <iostream>
 #include <windows.h>
+#include <sstream>
+#include <string>
 
 #include "MainConsole.h"
 #include "ConsoleDriver.h"
@@ -13,14 +15,79 @@ MainConsole::MainConsole(): AConsole("Main")
 void MainConsole::onEnabled()
 {
     this->display();
+    //ConsoleDriver::getInstance()->process();
     // ConsoleDriver::getInstance()->printTest();
     // ConsoleDriver::getInstance()->drawConsole();
 }
 
 void MainConsole::process() 
 {
+    String sInput;
+    std::getline(std::cin, sInput);
 
-}
+    // Split the input into command and parameters
+    std::stringstream s_in(sInput);
+    String command, param, name;
+    
+    s_in >> command;
+    s_in >> param;
+
+    if (command == "initialize")
+    {
+        std::cerr << "initialize command recognized. Doing something.\n";
+        std::cerr << "\n\nEnter a command: ";
+    }
+    else if (command == "screen")
+    {
+        if (param == "-s") {
+            s_in >> name;
+            //std::cerr << "screen -s command: " << name << std::endl;
+            //screen -s <name> : creates then add to table then go to new screeen
+            
+        }
+        else if (param == "-r") {
+            std::cerr << "screen -r command\n";
+            //screen -r <name>: goes back to that same screen
+            //i think search in console table
+        }
+        else if (param == "-ls") {
+            std::cerr << "screen -ls command\n";
+        }
+        std::cerr << "\n\nEnter a command: ";
+    }
+    else if (command == "scheduler-test")
+    {
+        std::cerr << "scheduler-test command recognized. Doing something.\n";
+        std::cerr << "\n\nEnter a command: ";
+    }
+    else if (command == "scheduler-stop")
+    {
+        std::cerr << "scheduler-stop command recognized. Doing something.\n";
+        std::cerr << "\n\nEnter a command: ";
+    }
+    else if (command == "report-util")
+    {
+        std::cerr << "report-util command recognized. Doing something.\n";
+        std::cerr << "\n\nEnter a command: ";
+    }
+    else if (command == "clear")
+    {
+        system("CLS");
+        this->display();
+    }
+    else if (command == "exit")
+    {
+        std::cerr << "exit command recognized. Exiting application.\n";
+        ConsoleDriver::getInstance()->exitApplication();
+        exit(0); // Exit the application.
+    }
+    else
+    {
+        std::cerr << "Unknown command.\n";
+        std::cerr << "\n\nEnter a command: ";
+    }
+}    
+
 
 void MainConsole::display()
 {

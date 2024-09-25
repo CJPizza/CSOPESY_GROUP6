@@ -19,7 +19,7 @@ void BaseScreen::onEnabled()
 
 void BaseScreen::process()
 {
-
+    //put exit command here (when exit go back to main menu)
 }
 
 void BaseScreen::display()
