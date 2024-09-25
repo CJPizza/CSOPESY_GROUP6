@@ -25,7 +25,7 @@ Process::String Process::getProcessName() const
 
 int Process::getLinesCode()
 {
-    return this->getLinesCode();
+    return this->linesCode;
 }
 
 int Process::newUID = 0;
