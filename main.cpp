@@ -5,7 +5,6 @@
 #include "AConsole.h"
 #include "ConsoleDriver.h"
 
-
 // void printHeader()
 // {
 //     std::cerr << "  ____ ____   ___  ____  _____ ______   __";
@@ -112,6 +111,7 @@ int main()
 
     while (running)
     {
+        
         getline(std::cin, sInput);
         userInput(sInput);
 
@@ -122,4 +122,5 @@ int main()
 
     return 0;
 }
+
 
