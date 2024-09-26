@@ -44,7 +44,7 @@ void MainConsole::process()
     if (command == "initialize")
     {
         std::cerr << "initialize command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "screen")
     {
@@ -72,43 +72,45 @@ void MainConsole::process()
         }
         else {
             std::cerr << "Unknown command: " << param;
-            std::cerr << "Enter a command: ";
+            // std::cerr << "Enter a command: ";
         }
     }
     else if (command == "scheduler-test")
     {
         std::cerr << "scheduler-test command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "scheduler-stop")
     {
         std::cerr << "scheduler-stop command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "report-util")
     {
         std::cerr << "report-util command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "clear")
     {
         system("CLS");
         this->display();
+        return;
     }
     else if (command == "exit")
     {
         std::cerr << "exit command recognized. Exiting application.\n";
         ConsoleDriver::getInstance()->exitApplication();
+        return;
     }
     else
     {
         std::cerr << "Unknown command.\n";
-        std::cerr << "Enter a command: ";
+        // std::cerr << "Enter a command: ";
     }
 
-    // if (this->getInMain()){
-    //     std::cerr << "\n\nEnter a command: ";
-    // }
+    if (this->getInMain()){
+        std::cerr << "\n\nEnter a command: ";
+    }
     // std::cerr << "\n\nEnter a command: ";
 }    
 
