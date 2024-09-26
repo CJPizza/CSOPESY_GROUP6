@@ -39,7 +39,10 @@ void MainConsole::process()
     String command, param, name;
 
     s_in >> command;
-    s_in >> param;
+ 
+    if (this->getInMain()){
+        std::cerr << "\n\nEnter a command: ";
+    }   s_in >> param;
 
     if (command == "initialize")
     {
@@ -105,9 +108,6 @@ void MainConsole::process()
         std::cerr << "Unknown command.\n";
     }
 
-    if (this->getInMain()){
-        std::cerr << "\n\nEnter a command: ";
-    }
     // std::cerr << "\n\nEnter a command: ";
 }    
 
