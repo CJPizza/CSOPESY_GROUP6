@@ -85,7 +85,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
 void ConsoleDriver::switchConsole(String consoleName)
 {
     if (this->consoleTable.find(consoleName) != this->consoleTable.end()) {
-        // system("cls");
+        system("cls");
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
         this->currentConsole->onEnabled();
@@ -100,6 +100,7 @@ void ConsoleDriver::switchConsole(String consoleName)
 void ConsoleDriver::switchToScreen(String screenName)
 {
     if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
+        system("cls");
         // disables `Enter a command:` prompt within MainConsole when entering a screen
         this->mainConsole->setOutMain();
         this->previousConsole = this->currentConsole;

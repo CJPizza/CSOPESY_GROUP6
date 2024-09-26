@@ -97,7 +97,6 @@ void MainConsole::process()
     {
         std::cerr << "exit command recognized. Exiting application.\n";
         ConsoleDriver::getInstance()->exitApplication();
-        exit(0); // Exit the application.
     }
     else
     {

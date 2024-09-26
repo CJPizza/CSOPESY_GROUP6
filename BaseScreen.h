@@ -1,4 +1,5 @@
 #pragma once
+#include <ctime>
 #include <memory>
 
 #include "AConsole.h"
@@ -16,9 +17,12 @@ class BaseScreen: public AConsole
         void onEnabled() override;
         void process() override;
         void display() override;
-
+        tm& getTime();
     private:
         void printProcessInfo() const;
         std::shared_ptr<Process> attachedProcess;
         bool refreshed = false;
+        tm timeStamp;
+        // std::time_t timeCreated;
+
 };
