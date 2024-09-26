@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <iomanip>
+#include <ostream>
 
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
@@ -69,8 +70,9 @@ void BaseScreen::printProcessInfo() const
     std::cerr << "Process: " << this->attachedProcess->getProcessName() << std::endl;
     std::cerr << "ID: " << this->attachedProcess->getUid() << std::endl;
     std::cerr << std::endl;
-    std::cerr << "Current instruction line: " << this->attachedProcess->getCurrentIL() << std::endl;
-    std::cerr << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
+    std::cerr << "Current instruction line: " << this->attachedProcess->getCurrentIL()  
+        << " / " << this->attachedProcess->getLinesCode() << std::endl;
+    // std::cerr << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
     std::cerr << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
         << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
         << time.tm_year + 1900 << ", "
