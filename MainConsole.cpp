@@ -131,11 +131,10 @@ void MainConsole::display()
     std::cerr << "| |___ ___) | |_| |  __/| |___ ___) || |";
     std::cerr << "\n";
     std::cerr << " \\____|____/ \\___/|_|   |_____|____/ |_|";
-    std::cerr << "\n                  GROUP 6";
     HANDLE color = this->consoleHandle;
     SetConsoleTextAttribute(color, 10);
     std::cerr << "\n\nHello. Welcome to the CSOPESY Command Line!" << std::endl;
-    SetConsoleTextAttribute(color, 10);
+    SetConsoleTextAttribute(color, 14);
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
     SetConsoleTextAttribute(color, 7);
     std::cerr << "Enter a command: ";
