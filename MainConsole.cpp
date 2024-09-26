@@ -13,12 +13,18 @@
 MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
     this->name = MAIN_CONSOLE;
+    this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 }
 
 void MainConsole::onEnabled()
 {
     this->display();
-    //ConsoleDriver::getInstance()->process();
+
+    /*
+     * Calling ConsoleDriver::getInstance() within onEnabled() causes issue
+     * for now HANDLE will be initialized here for terminal formatting
+     */
+
     // ConsoleDriver::getInstance()->printTest();
     // ConsoleDriver::getInstance()->drawConsole();
 }
@@ -127,12 +133,12 @@ void MainConsole::display()
     std::cerr << "\n";
     std::cerr << " \\____|____/ \\___/|_|   |_____|____/ |_|";
     std::cerr << "\n                  GROUP 6";
-    // HANDLE color = ConsoleDriver::getInstance()->getConsoleHandle();
-    // SetConsoleTextAttribute(color, 10);
+    HANDLE color = this->consoleHandle;
+    SetConsoleTextAttribute(color, 10);
     std::cerr << "\n\nHello. Welcome to the CSOPESY Command Line!" << std::endl;
-    // SetConsoleTextAttribute(color, 10);
+    SetConsoleTextAttribute(color, 10);
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
-    // SetConsoleTextAttribute(color, 7);
+    SetConsoleTextAttribute(color, 7);
     std::cerr << "Enter a command: ";
 }
 

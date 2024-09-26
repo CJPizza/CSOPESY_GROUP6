@@ -12,6 +12,7 @@ public:
     void setInMain();
     void setOutMain();
     bool getInMain() const;
+    HANDLE consoleHandle;
 private:
     bool inMain = true;
 };

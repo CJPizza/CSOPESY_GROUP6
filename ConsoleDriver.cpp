@@ -89,7 +89,6 @@ void ConsoleDriver::switchConsole(String consoleName)
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
         this->currentConsole->onEnabled();
-
         // std::cerr << this->currentConsole->getName();
     }
     else 
