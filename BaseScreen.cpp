@@ -37,6 +37,9 @@ void BaseScreen::process()
     if (sInput == "exit") {
         ConsoleDriver::getInstance()->returnToPreviousConsole();
     }
+    else {
+        std::cerr << "Unknown command: " << sInput << std::endl;
+    }
 }
 
 void BaseScreen::display()

@@ -37,7 +37,7 @@ void MainConsole::process()
     // Split the input into command and parameters
     std::stringstream s_in(sInput);
     String command, param, name;
-    
+
     s_in >> command;
     s_in >> param;
 
@@ -52,10 +52,12 @@ void MainConsole::process()
             s_in >> name;
             //std::cerr << "screen -s command: " << name << std::endl;
             //screen -s <name> : creates then add to table then go to new screeen
+            if (name.length() > 0) {
+                std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
+                std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, name);
+                ConsoleDriver::getInstance()->registerScreen(newScreen);
+            }
 
-            std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
-            std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, name);
-            ConsoleDriver::getInstance()->registerScreen(newScreen);
         }
         else if (param == "-r") {
             // std::cerr << "screen -r command\n";
@@ -69,24 +71,24 @@ void MainConsole::process()
         else if (param == "-ls") {
             std::cerr << "screen -ls command\n";
         }
-        if (this->getInMain()){
-            std::cerr << "\n\nEnter a command: ";
+        else {
+            std::cerr << "Unknown command: " << param;
         }
     }
     else if (command == "scheduler-test")
     {
         std::cerr << "scheduler-test command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "scheduler-stop")
     {
         std::cerr << "scheduler-stop command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "report-util")
     {
         std::cerr << "report-util command recognized. Doing something.\n";
-        std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "clear")
     {
@@ -101,8 +103,12 @@ void MainConsole::process()
     else
     {
         std::cerr << "Unknown command.\n";
+    }
+
+    if (this->getInMain()){
         std::cerr << "\n\nEnter a command: ";
     }
+    // std::cerr << "\n\nEnter a command: ";
 }    
 
 void MainConsole::setInMain()
@@ -139,8 +145,3 @@ void MainConsole::display()
     SetConsoleTextAttribute(color, 7);
     std::cerr << "Enter a command: ";
 }
-
-// void MainConsole::process() 
-// {
-//
-// }

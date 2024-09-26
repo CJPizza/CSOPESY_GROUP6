@@ -63,8 +63,8 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
         std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
         return;
     }
-
     this->consoleTable[screenRef->getName()] = screenRef;
+    this->switchToScreen(screenRef->getName());
 }
 
 void ConsoleDriver::unregisterScreen(String screenName) 
@@ -76,7 +76,6 @@ void ConsoleDriver::unregisterScreen(String screenName)
         std::cerr << "Unable to unregister " << screenName << std::endl;
     }
 }
-
 
 /*
  * Console name is marquee, main and memory
@@ -146,10 +145,11 @@ bool ConsoleDriver::isRunning() const
 }
 
 // DEBUG purposes
-void ConsoleDriver::printTest() const
-{
-    std::cerr << "printTest Function called" << std::endl;
-}
+// void ConsoleDriver::printTest() const
+// {
+//     std::cerr << "printTest Function called" << std::endl;
+// }
+
 
 ConsoleDriver::ConsoleDriver()
 {
