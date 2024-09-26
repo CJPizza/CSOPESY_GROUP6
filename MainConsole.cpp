@@ -39,10 +39,7 @@ void MainConsole::process()
     String command, param, name;
 
     s_in >> command;
- 
-    if (this->getInMain()){
-        std::cerr << "\n\nEnter a command: ";
-    }   s_in >> param;
+    s_in >> param;
 
     if (command == "initialize")
     {
@@ -65,7 +62,6 @@ void MainConsole::process()
         else if (param == "-r") {
             // std::cerr << "screen -r command\n";
             //screen -r <name>: goes back to that same screen
-            //i think search in console table
             s_in >> name;
             if (name.length() > 0) {
                 ConsoleDriver::getInstance()->switchToScreen(name);
@@ -76,22 +72,23 @@ void MainConsole::process()
         }
         else {
             std::cerr << "Unknown command: " << param;
+            std::cerr << "Enter a command: ";
         }
     }
     else if (command == "scheduler-test")
     {
         std::cerr << "scheduler-test command recognized. Doing something.\n";
-        // std::cerr << "\n\nEnter a command: ";
+        std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "scheduler-stop")
     {
         std::cerr << "scheduler-stop command recognized. Doing something.\n";
-        // std::cerr << "\n\nEnter a command: ";
+        std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "report-util")
     {
         std::cerr << "report-util command recognized. Doing something.\n";
-        // std::cerr << "\n\nEnter a command: ";
+        std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "clear")
     {
@@ -106,8 +103,12 @@ void MainConsole::process()
     else
     {
         std::cerr << "Unknown command.\n";
+        std::cerr << "Enter a command: ";
     }
 
+    // if (this->getInMain()){
+    //     std::cerr << "\n\nEnter a command: ";
+    // }
     // std::cerr << "\n\nEnter a command: ";
 }    
 

@@ -61,6 +61,7 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
     if (this->consoleTable.find(screenRef->getName()) != this->consoleTable.end())
     {
         std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
+        std::cerr << "Enter a command: ";
         return;
     }
     this->consoleTable[screenRef->getName()] = screenRef;
@@ -108,6 +109,7 @@ void ConsoleDriver::switchToScreen(String screenName)
     }
     else {
         std::cerr << "Screen name " << screenName << " not found." << std::endl;
+        std::cerr << "Enter a command: ";
     }
 }
 
