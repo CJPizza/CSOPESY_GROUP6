@@ -3,6 +3,7 @@
 
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
+#include "MainConsole.h"
 
 BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AConsole(processName)
 {
@@ -11,15 +12,16 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 
 void BaseScreen::onEnabled()
 {
-    ConsoleDriver::getInstance()->drawConsole();
+    // ConsoleDriver::getInstance()->drawConsole();
     /*
      * Toggles display and process (Input handling)??
      * */
+    this->display();
 }
 
 void BaseScreen::process()
 {
-    //put exit command here (when exit go back to main menu)
+    //put exit command here (when exit go back to main console)
     std::cerr << "root:\\> ";
     String sInput;
     std::getline(std::cin, sInput);

@@ -52,7 +52,7 @@ void MainConsole::process()
             ConsoleDriver::getInstance()->registerScreen(newScreen);
         }
         else if (param == "-r") {
-            std::cerr << "screen -r command\n";
+            // std::cerr << "screen -r command\n";
             //screen -r <name>: goes back to that same screen
             //i think search in console table
             s_in >> name;
@@ -63,7 +63,9 @@ void MainConsole::process()
         else if (param == "-ls") {
             std::cerr << "screen -ls command\n";
         }
-        std::cerr << "\n\nEnter a command: ";
+        if (this->getInMain()){
+            std::cerr << "\n\nEnter a command: ";
+        }
     }
     else if (command == "scheduler-test")
     {
@@ -98,6 +100,20 @@ void MainConsole::process()
     }
 }    
 
+void MainConsole::setInMain()
+{
+    this->inMain = true;
+}
+
+void MainConsole::setOutMain()
+{
+    this->inMain = false;
+}
+
+bool MainConsole::getInMain() const
+{
+    return this->inMain;
+}
 
 void MainConsole::display()
 {

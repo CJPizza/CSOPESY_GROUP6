@@ -85,7 +85,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
 void ConsoleDriver::switchConsole(String consoleName)
 {
     if (this->consoleTable.find(consoleName) != this->consoleTable.end()) {
-        system("cls");
+        // system("cls");
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
         this->currentConsole->onEnabled();
@@ -101,7 +101,8 @@ void ConsoleDriver::switchConsole(String consoleName)
 void ConsoleDriver::switchToScreen(String screenName)
 {
     if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
-        system("cls");
+        // disables `Enter a command:` prompt within MainConsole when entering a screen
+        this->mainConsole->setOutMain();
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[screenName];
         this->currentConsole->onEnabled();
@@ -114,6 +115,11 @@ void ConsoleDriver::switchToScreen(String screenName)
 void ConsoleDriver::returnToPreviousConsole()
 {
     if (this->previousConsole != nullptr) {
+        // Manages "Enter a command: " output from MainConsole within BaseScreen
+        // might need to update this since it will do so for every return to console
+        // in the future; such as MarqueeConsole and SchedulingConsole
+        this->mainConsole->setInMain();
+
         this->switchConsole(this->previousConsole->getName());
         this->previousConsole = nullptr;
     }
@@ -156,7 +162,7 @@ ConsoleDriver::ConsoleDriver()
     // const std::shared_ptr<SchedulingConsole> mainConsole = std::make_shared<SchedulingConsole>();
     // const std::shared_ptr<MemorySimulationConsole> mainConsole = std::make_shared<MemorySimulationConsole>();
 
-    this->consoleTable[MAIN_CONSOLE] = mainConsole;
+    this->consoleTable[MAIN_CONSOLE] = this->mainConsole;
 
     this->switchConsole(MAIN_CONSOLE);
 }

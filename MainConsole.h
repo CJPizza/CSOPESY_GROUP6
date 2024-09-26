@@ -9,6 +9,9 @@ public:
     void onEnabled() override;
     void process() override;
     void display() override;
+    void setInMain();
+    void setOutMain();
+    bool getInMain() const;
 private:
-
+    bool inMain = true;
 };
