@@ -32,32 +32,6 @@ void MainConsole::onEnabled()
     // ConsoleDriver::getInstance()->drawConsole();
 }
 
-// <<<<<<< HEAD
-// void MainConsole::loadHeaderToStr()
-// {
-// }
-// =======
-// void MainConsole::loadHeaderToStr()
-// {
-//     this->commandHist.append( "  ____ ____   ___  ____  _____ ______   __");
-//     this->commandHist.append( "\n");
-//     this->commandHist.append( " / ___/ ___| / _ \\|  _ \\| ____/ ___\\ \\ / /");
-//     this->commandHist.append( "\n");
-//     this->commandHist.append( "| |   \\___ \\| | | | |_) |  _| \\___ \\\\ V / ");
-//     this->commandHist.append( "\n");
-//     this->commandHist.append( "| |___ ___) | |_| |  __/| |___ ___) || |");
-//     this->commandHist.append( "\n");
-//     this->commandHist.append( " \\____|____/ \\___/|_|   |_____|____/ |_|");
-//     HANDLE color = this->consoleHandle;
-//     SetConsoleTextAttribute(color, 10);
-//     this->commandHist.append( "\n\nHello. Welcome to the CSOPESY Command Line!\n");
-//     SetConsoleTextAttribute(color, 14);
-//     this->commandHist.append( "Type 'exit' to quit, 'clear' to clear the screen\n" );
-//     SetConsoleTextAttribute(color, 7);
-//     this->commandHist.append( "Enter a command: " );
-// }
-// >>>>>>> 576962d2032b7898fe462572c7e741eedc0b392e
-
 void MainConsole::process() 
 {
     

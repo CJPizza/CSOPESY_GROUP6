@@ -123,9 +123,8 @@ void ConsoleDriver::returnToPreviousConsole()
         // might need to update this since it will do so for every return to console
         // in the future; such as MarqueeConsole and SchedulingConsole
         this->mainConsole->setInMain();
-        this->currentConsole = this->previousConsole;
+        this->switchConsole(this->previousConsole->getName());
         this->previousConsole = nullptr;
-        this->switchConsole(this->currentConsole->getName());
     }
 }
 
