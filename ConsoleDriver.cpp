@@ -61,7 +61,7 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
     if (this->consoleTable.find(screenRef->getName()) != this->consoleTable.end())
     {
         std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
-        std::cerr << "Enter a command: ";
+        this->currentConsole->commandHist.append("\nScreen name " + screenRef->getName() + " already exists. Please use a different name.\n");
         return;
     }
     this->consoleTable[screenRef->getName()] = screenRef;
@@ -75,6 +75,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
     }
     else {
         std::cerr << "Unable to unregister " << screenName << std::endl;
+        this->currentConsole->commandHist.append("\nUnable to unregister " + screenName + "\n");
     }
 }
 
@@ -94,6 +95,7 @@ void ConsoleDriver::switchConsole(String consoleName)
     else 
     {
         std::cerr << "Console name " << consoleName << " not found. Was it initialized?" << std::endl;
+        this->currentConsole->commandHist.append("\nConsole name "+consoleName+" not found. Was it initialized?\n");
     }
 }
 
@@ -109,7 +111,8 @@ void ConsoleDriver::switchToScreen(String screenName)
     }
     else {
         std::cerr << "Screen name " << screenName << " not found." << std::endl;
-        std::cerr << "Enter a command: ";
+        this->currentConsole->commandHist.append("\nScreen name " + screenName + " not found.\n");
+        // std::cerr << "Enter a command: ";
     }
 }
 
@@ -120,9 +123,9 @@ void ConsoleDriver::returnToPreviousConsole()
         // might need to update this since it will do so for every return to console
         // in the future; such as MarqueeConsole and SchedulingConsole
         this->mainConsole->setInMain();
-
-        this->switchConsole(this->previousConsole->getName());
+        this->currentConsole = this->previousConsole;
         this->previousConsole = nullptr;
+        this->switchConsole(this->currentConsole->getName());
     }
 }
 

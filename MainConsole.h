@@ -9,6 +9,7 @@ public:
     void onEnabled() override;
     void process() override;
     void display() override;
+    void loadHeaderToStr();
     void setInMain();
     void setOutMain();
     bool getInMain() const;

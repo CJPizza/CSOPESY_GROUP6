@@ -1,5 +1,4 @@
 #include "AConsole.h"
-#include "ConsoleDriver.h"
 
 AConsole::AConsole(String consoleName) {
     this->name = consoleName;
