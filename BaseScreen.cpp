@@ -4,6 +4,7 @@
 #include <memory>
 #include <iomanip>
 #include <ostream>
+#include <string>
 
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
@@ -34,28 +35,25 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 //     this->commandHist.append("Process: " + this->attachedProcess->getProcessName() + 
 //             this->attachedProcess->getProcessName() + "\n");
 //
-//     this->commandHist.append( << "Process: " << this->attachedProcess->getProcessName() << std::endl;
-//     this->commandHist.append( << "ID: " << this->attachedProcess->getUid() << std::endl;
-//     this->commandHist.append( << std::endl;
-//     this->commandHist.append( << "Current instruction line: " << this->attachedProcess->getCurrentIL()  
-//         << " / " << this->attachedProcess->getLinesCode() << std::endl;
-//     // this->commandHist.append( << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
-//     this->commandHist.append( << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
-//         << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
-//         << time.tm_year + 1900 << ", "
-//         << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
-//         << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
-//         << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
-//         << std::endl;
-//     // std::cerr << "root:\\> ";
+//     this->commandHist.append("Process: " + this->attachedProcess->getProcessName() + "\n");
+//     this->commandHist.append("ID: " + std::to_string(this->attachedProcess->getUid()) + "\n");
+//     this->commandHist.append("\n");
+//     this->commandHist.append("Current instruction line: " + std::to_string(this->attachedProcess->getCurrentIL()) + 
+//             " / " + std::to_string(this->attachedProcess->getLinesCode()) + "\n");
+//     this->commandHist.append("Lines of code: " + std::to_string(this->attachedProcess->getLinesCode()) + "\n");
+//     this->commandHist << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/";
+    //     << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
+    //     << time.tm_year + 1900 << ", "
+    //     << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
+    //     << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
+    //     << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
+    //     << std::endl;
+    // std::cerr << "root:\\> ";
 // }
 
 void BaseScreen::onEnabled()
 {
     // ConsoleDriver::getInstance()->drawConsole();
-    /*
-     * Toggles display and process (Input handling)??
-     * */
     this->display();
 }
 

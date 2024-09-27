@@ -1,6 +1,7 @@
 #pragma once
 #include <ctime>
 #include <memory>
+#include <sstream>
 
 #include "AConsole.h"
 #include "Process.h"
