@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <ostream>
 #include <string>
+#include <sstream>
 
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
@@ -32,23 +33,23 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 //     else {
 //         hr12 = "AM";
 //     }
-//     this->commandHist.append("Process: " + this->attachedProcess->getProcessName() + 
-//             this->attachedProcess->getProcessName() + "\n");
+//     std::stringstream strStream;
 //
-//     this->commandHist.append("Process: " + this->attachedProcess->getProcessName() + "\n");
-//     this->commandHist.append("ID: " + std::to_string(this->attachedProcess->getUid()) + "\n");
-//     this->commandHist.append("\n");
-//     this->commandHist.append("Current instruction line: " + std::to_string(this->attachedProcess->getCurrentIL()) + 
-//             " / " + std::to_string(this->attachedProcess->getLinesCode()) + "\n");
-//     this->commandHist.append("Lines of code: " + std::to_string(this->attachedProcess->getLinesCode()) + "\n");
-//     this->commandHist << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/";
-    //     << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
-    //     << time.tm_year + 1900 << ", "
-    //     << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
-    //     << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
-    //     << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
-    //     << std::endl;
-    // std::cerr << "root:\\> ";
+//     strStream << "Process: " << this->attachedProcess->getProcessName() << std::endl;
+//     strStream << "ID: " << this->attachedProcess->getUid() << std::endl;
+//     strStream << std::endl;
+//     strStream << "Current instruction line: " << this->attachedProcess->getCurrentIL()  
+//         << " / " << this->attachedProcess->getLinesCode() << std::endl;
+//     // strStream << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
+//     strStream << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
+//         << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
+//         << time.tm_year + 1900 << ", "
+//         << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
+//         << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
+//         << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
+//         << std::endl;
+//
+//     this->commandHist.append(strStream.str());
 // }
 
 void BaseScreen::onEnabled()
@@ -60,16 +61,19 @@ void BaseScreen::onEnabled()
 void BaseScreen::process()
 {
     //put exit command here (when exit go back to main console)
+    this->commandHist.append("root:\\> ");
     std::cerr << "root:\\> ";
     String sInput;
     std::getline(std::cin, sInput);
-    
+    this->commandHist.append(sInput+"\n");
     if (sInput == "exit") {
         ConsoleDriver::getInstance()->returnToPreviousConsole();
     }
     else {
         std::cerr << "Unknown command: " << sInput << std::endl;
+        this->commandHist.append("Unknown command: " + sInput + "\n");
     }
+    // this->commandHist.append("\n");
 }
 
 void BaseScreen::display()
@@ -81,6 +85,7 @@ void BaseScreen::display()
         std::cerr << "Process not properly attached" << std::endl;
     }
     this->printProcessInfo();
+    std::cerr << this->commandHist;
 }
 
 tm& BaseScreen::getTime()
