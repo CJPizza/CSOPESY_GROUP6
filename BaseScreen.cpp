@@ -18,6 +18,38 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
     this->timeStamp = *localtime(&curr_time);
 }
 
+
+// void BaseScreen::loadHeaderToStr()
+// {
+//     // char timeString[std::size("mm/dd/yyyy, hh:mm:ss")]
+//     tm time = this->timeStamp;
+//     String hr12;
+//     if (time.tm_hour >= 12) {
+//         time.tm_hour = time.tm_hour - 12;
+//         hr12 = "PM";
+//     }
+//     else {
+//         hr12 = "AM";
+//     }
+//     this->commandHist.append("Process: " + this->attachedProcess->getProcessName() + 
+//             this->attachedProcess->getProcessName() + "\n");
+//
+//     this->commandHist.append( << "Process: " << this->attachedProcess->getProcessName() << std::endl;
+//     this->commandHist.append( << "ID: " << this->attachedProcess->getUid() << std::endl;
+//     this->commandHist.append( << std::endl;
+//     this->commandHist.append( << "Current instruction line: " << this->attachedProcess->getCurrentIL()  
+//         << " / " << this->attachedProcess->getLinesCode() << std::endl;
+//     // this->commandHist.append( << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
+//     this->commandHist.append( << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
+//         << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
+//         << time.tm_year + 1900 << ", "
+//         << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
+//         << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
+//         << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
+//         << std::endl;
+//     // std::cerr << "root:\\> ";
+// }
+
 void BaseScreen::onEnabled()
 {
     // ConsoleDriver::getInstance()->drawConsole();

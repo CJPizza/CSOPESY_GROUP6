@@ -18,8 +18,11 @@ MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 
 void MainConsole::onEnabled()
 {
-    this->display();
+    // if (this->commandHist.length() == 0) {
+    //     loadHeaderToStr();
+    // }
 
+    this->display();
     /*
      * Calling ConsoleDriver::getInstance() within onEnabled() causes issue
      * for now HANDLE will be initialized here for terminal formatting
@@ -29,8 +32,14 @@ void MainConsole::onEnabled()
     // ConsoleDriver::getInstance()->drawConsole();
 }
 
+// void MainConsole::loadHeaderToStr()
+// {
+// }
+
 void MainConsole::process() 
 {
+    
+    // system("cls");
     String sInput;
     std::getline(std::cin, sInput);
 
@@ -41,9 +50,11 @@ void MainConsole::process()
     s_in >> command;
     s_in >> param;
 
+    this->commandHist.append(command + " " + param);
     if (command == "initialize")
     {
         std::cerr << "initialize command recognized. Doing something.\n";
+        this->commandHist.append("initialize command recognized. Doing something.\n");
         // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "screen")
@@ -53,8 +64,9 @@ void MainConsole::process()
             //std::cerr << "screen -s command: " << name << std::endl;
             //screen -s <name> : creates then add to table then go to new screeen
             if (name.length() > 0) {
+                this->commandHist.append(" " + name);
                 std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
-                std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, name);
+                std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
                 ConsoleDriver::getInstance()->registerScreen(newScreen);
             }
 
@@ -64,36 +76,43 @@ void MainConsole::process()
             //screen -r <name>: goes back to that same screen
             s_in >> name;
             if (name.length() > 0) {
+                this->commandHist.append(" " + name);
                 ConsoleDriver::getInstance()->switchToScreen(name);
             }
         }
         else if (param == "-ls") {
             std::cerr << "screen -ls command\n";
+            this->commandHist.append("screen -ls command\n");
         }
         else {
             std::cerr << "Unknown command: " << param;
+            this->commandHist.append("Unknown command: " + param);
             // std::cerr << "Enter a command: ";
         }
     }
     else if (command == "scheduler-test")
     {
         std::cerr << "scheduler-test command recognized. Doing something.\n";
+        this->commandHist.append("\nscheduler-test command recognized. Doing something.\n");
         // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "scheduler-stop")
     {
         std::cerr << "scheduler-stop command recognized. Doing something.\n";
         // std::cerr << "\n\nEnter a command: ";
+        this->commandHist.append("\nscheduler-stop command recognized. Doing something.\n");
     }
     else if (command == "report-util")
     {
         std::cerr << "report-util command recognized. Doing something.\n";
         // std::cerr << "\n\nEnter a command: ";
+        this->commandHist.append("\nreport-util command recognized. Doing something.\n");
     }
     else if (command == "clear")
     {
         system("CLS");
-        this->display();
+        this->commandHist = "";
+        this->onEnabled();
         return;
     }
     else if (command == "exit")
@@ -105,12 +124,14 @@ void MainConsole::process()
     else
     {
         std::cerr << "Unknown command.\n";
+        this->commandHist.append("\nUnknown command.\n");
         // std::cerr << "Enter a command: ";
     }
 
     if (this->getInMain()){
         std::cerr << "\n\nEnter a command: ";
     }
+    this->commandHist.append("\n\nEnter a command: ");
     // std::cerr << "\n\nEnter a command: ";
 }    
 
@@ -147,4 +168,5 @@ void MainConsole::display()
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
     SetConsoleTextAttribute(color, 7);
     std::cerr << "Enter a command: ";
+    std::cerr << this->commandHist;
 }

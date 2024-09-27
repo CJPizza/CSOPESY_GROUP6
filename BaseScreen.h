@@ -18,6 +18,7 @@ class BaseScreen: public AConsole
         void process() override;
         void display() override;
         tm& getTime();
+        void loadHeaderToStr();
     private:
         void printProcessInfo() const;
         std::shared_ptr<Process> attachedProcess;
