@@ -9,6 +9,7 @@
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
 #include "Process.h"
+#include "SchedulerPrototype.h"
 
 MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
@@ -84,8 +85,12 @@ void MainConsole::process()
             }
         }
         else if (param == "-ls") {
-            std::cerr << "screen -ls command\n";
-            this->commandHist.append("screen -ls command\n");
+            // std::cerr << "screen -ls command\n";
+            // if (name.length() > 0) {
+            //     this->commandHist.append(" " + name);
+                ConsoleDriver::getInstance()->switchToScreen(SCHEDULER_CONSOLE);
+                //return;
+            // }
         }
         else {
             std::cerr << "Unknown command: " << param;
@@ -95,9 +100,13 @@ void MainConsole::process()
     }
     else if (command == "scheduler-test")
     {
-        std::cerr << "scheduler-test command recognized. Doing something.\n";
-        this->commandHist.append("\nscheduler-test command recognized. Doing something.\n");
-        // std::cerr << "\n\nEnter a command: ";
+        // std::cerr << "scheduler-test command recognized. Doing something.\n";
+        // this->commandHist.append("\nscheduler-test command recognized. Doing something.\n");
+        // // std::cerr << "\n\nEnter a command: ";
+
+        std::cerr << "First-Come-First-Serve Scheduler. \n";
+        this->commandHist.append("First-Come-First-Serve Scheduler");
+        startScheduler();
     }
     else if (command == "scheduler-stop")
     {

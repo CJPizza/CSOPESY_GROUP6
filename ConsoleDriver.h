@@ -12,6 +12,7 @@
 typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
 const String MARQUEE_CONSOLE = "MARQUEE_CONSOLE";
+const String SCHEDULER_CONSOLE = "SCHEDULER_CONSOLE";
 
 class ConsoleDriver {
     public:
@@ -55,6 +56,7 @@ class ConsoleDriver {
         //
         const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
         const std::shared_ptr<MarqueeConsole> marqueeConsole = std::make_shared<MarqueeConsole>();
+        const std::shared_ptr<SchedulerPrototype> schedulerConsole = std::make_shared<SchedulerPrototype>();
 
         HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         bool running = true;
