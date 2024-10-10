@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 
+<<<<<<< HEAD
 #include "SchedulerPrototype.h"
 
 using namespace std;
@@ -28,6 +29,22 @@ void SchedulerPrototype::display()
     
 }
 //i think all these headers go to .h
+=======
+using namespace std;
+
+// Struct to hold process information
+struct Process
+{
+    string name;
+    int totalTasks;  // Total tasks to complete
+    int completedTasks;  // Completed tasks
+    time_t startTime;  // Start time
+    int coreId;  // Core where it's running
+
+    Process(string n, int t) : name(n), totalTasks(t), completedTasks(0), startTime(time(0)), coreId(-1) {}
+};
+
+>>>>>>> 8d76f9538bef1230ca594d22e2aaf9d4f5ddc5fc
 // Global variables
 queue<Process*> readyQueue;  // Ready queue for processes
 vector<Process*> runningProcesses;  // Processes running on CPU
