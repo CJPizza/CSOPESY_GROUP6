@@ -10,10 +10,7 @@ public:
     void process() override;
     void display() override;
     // void loadHeaderToStr();
-    void setInMain();
-    void setOutMain();
-    bool getInMain() const;
     HANDLE consoleHandle;
+    void printHeader() const;
 private:
-    bool inMain = true;
 };

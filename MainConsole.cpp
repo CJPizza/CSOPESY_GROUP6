@@ -22,7 +22,7 @@ void MainConsole::onEnabled()
     //     loadHeaderToStr();
     // }
 
-    this->display();
+    // this->display();
     /*
      * Calling ConsoleDriver::getInstance() within onEnabled() causes issue
      * for now HANDLE will be initialized here for terminal formatting
@@ -30,6 +30,11 @@ void MainConsole::onEnabled()
 
     // ConsoleDriver::getInstance()->printTest();
     // ConsoleDriver::getInstance()->drawConsole();
+    if (this->commandHist == "")
+    {
+        this->commandHist.append("Enter a command: ");
+    }
+    this->printHeader();
 }
 
 void MainConsole::process() 
@@ -64,6 +69,7 @@ void MainConsole::process()
                 std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
                 std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
                 ConsoleDriver::getInstance()->registerScreen(newScreen);
+                //return;
             }
 
         }
@@ -74,6 +80,7 @@ void MainConsole::process()
             if (name.length() > 0) {
                 this->commandHist.append(" " + name);
                 ConsoleDriver::getInstance()->switchToScreen(name);
+                //return;
             }
         }
         else if (param == "-ls") {
@@ -108,8 +115,14 @@ void MainConsole::process()
     {
         system("CLS");
         this->commandHist = "";
-        this->onEnabled();
+        this->printHeader();
         return;
+    }
+    else if (command == "marquee")
+    {
+
+        //ConsoleDriver::getInstance()->exitApplication();
+        ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
     }
     else if (command == "exit")
     {
@@ -124,29 +137,17 @@ void MainConsole::process()
         // std::cerr << "Enter a command: ";
     }
 
-    if (this->getInMain()){
-        std::cerr << "\n\nEnter a command: ";
-    }
-    this->commandHist.append("\n\nEnter a command: ");
+    //this->commandHist.append("\nEnter a command: ");
     // std::cerr << "\n\nEnter a command: ";
 }    
 
-void MainConsole::setInMain()
-{
-    this->inMain = true;
-}
-
-void MainConsole::setOutMain()
-{
-    this->inMain = false;
-}
-
-bool MainConsole::getInMain() const
-{
-    return this->inMain;
-}
-
 void MainConsole::display()
+{
+    std::cerr << "\nEnter a command: ";
+    this->commandHist.append("\nEnter a command: ");
+}
+
+void MainConsole::printHeader() const
 {
     std::cerr << "  ____ ____   ___  ____  _____ ______   __";
     std::cerr << "\n";
@@ -163,6 +164,6 @@ void MainConsole::display()
     SetConsoleTextAttribute(color, 14);
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
     SetConsoleTextAttribute(color, 7);
-    std::cerr << "Enter a command: ";
+    // std::cerr << "Enter a command: ";
     std::cerr << this->commandHist;
 }

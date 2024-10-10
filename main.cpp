@@ -24,6 +24,7 @@ int main()
         // getline(std::cin, sInput);
         // userInput(sInput);
         ConsoleDriver::getInstance()->process(); 
+        ConsoleDriver::getInstance()->drawConsole();
 
         running = ConsoleDriver::getInstance()->isRunning();
     }

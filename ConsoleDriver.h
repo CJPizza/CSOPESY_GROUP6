@@ -7,9 +7,11 @@
 
 #include "BaseScreen.h"
 #include "MainConsole.h"
+#include "MarqueeConsole.h"
 
 typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";
+const String MARQUEE_CONSOLE = "MARQUEE_CONSOLE";
 
 class ConsoleDriver {
     public:
@@ -30,13 +32,15 @@ class ConsoleDriver {
         void switchConsole(String screenName);
         void returnToPreviousConsole(); 
 
+        void setCursorPosition(int posX, int posY) const;
+
         void exitApplication();
         bool isRunning() const;
 
         HANDLE getConsoleHandle() const;
 
         // DEBUG PURPOSES
-        void printTest() const;
+        // void printTest() const;
         
     private:
         ConsoleDriver();
@@ -50,7 +54,8 @@ class ConsoleDriver {
         std::shared_ptr<AConsole> previousConsole;
         //
         const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
+        const std::shared_ptr<MarqueeConsole> marqueeConsole = std::make_shared<MarqueeConsole>();
 
-        HANDLE consoleHandle;
+        HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         bool running = true;
 };

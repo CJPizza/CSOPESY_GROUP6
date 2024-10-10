@@ -55,14 +55,14 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 void BaseScreen::onEnabled()
 {
     // ConsoleDriver::getInstance()->drawConsole();
-    this->display();
+    this->printProcessInfo();
 }
 
 void BaseScreen::process()
 {
     //put exit command here (when exit go back to main console)
     this->commandHist.append("root:\\> ");
-    std::cerr << "root:\\> ";
+
     String sInput;
     std::getline(std::cin, sInput);
     this->commandHist.append(sInput+"\n");
@@ -84,8 +84,8 @@ void BaseScreen::display()
     if (this->attachedProcess == nullptr) {
         std::cerr << "Process not properly attached" << std::endl;
     }
-    this->printProcessInfo();
-    std::cerr << this->commandHist;
+    std::cerr << "root:\\> ";
+
 }
 
 tm& BaseScreen::getTime()
@@ -118,5 +118,6 @@ void BaseScreen::printProcessInfo() const
         << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
         << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
         << std::endl;
+    std::cerr << this->commandHist;
     // std::cerr << "root:\\> ";
 }
