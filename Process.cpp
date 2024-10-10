@@ -6,7 +6,7 @@ Process::Process(String nameIn)
     : uid(newUID++)
 {
     this->processName = nameIn;
-    this->linesCode = 50;
+    this->linesCode = 100;
 }
 
 int Process::getUid() 
@@ -29,6 +29,15 @@ int Process::getLinesCode()
     return this->linesCode;
 }
 
+void Process::incrementInstruction()
+{
+    if (this->currentIL < this->linesCode)
+    {
+        this->currentIL++;
+    }
+
+}
+
 int Process::newUID = 0;
 
 
@@ -36,4 +45,3 @@ int Process::newUID = 0;
 //     return name;
 // }
 // };
-

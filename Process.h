@@ -12,10 +12,11 @@ public:
     String getProcessName() const;
     int getCurrentIL();
     int getLinesCode();
+    void incrementInstruction();
 private:
     String processName;
     int currentIL = 0;
-    int linesCode = 50;
+    int linesCode = 100;
     static int newUID;
 };
 
