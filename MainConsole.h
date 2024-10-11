@@ -12,5 +12,6 @@ public:
     // void loadHeaderToStr();
     HANDLE consoleHandle;
     void printHeader() const;
+    void lsUI() const;
 private:
 };

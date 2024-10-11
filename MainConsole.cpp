@@ -40,7 +40,7 @@ void MainConsole::onEnabled()
 
 void MainConsole::process() 
 {
-    
+
     // system("cls");
     String sInput;
     std::getline(std::cin, sInput);
@@ -67,22 +67,31 @@ void MainConsole::process()
             //screen -s <name> : creates then add to table then go to new screeen
             if (name.length() > 0) {
                 this->commandHist.append(" " + name);
-                std::shared_ptr<Process> newProcess = std::make_shared<Process>(name);
+                std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
                 std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
                 ConsoleDriver::getInstance()->registerScreen(newScreen);
                 //return;
             }
-
-        }
-        else if (param == "-r") {
-            // std::cerr << "screen -r command\n";
-            //screen -r <name>: goes back to that same screen
-            s_in >> name;
-            if (name.length() > 0) {
-                this->commandHist.append(" " + name);
-                ConsoleDriver::getInstance()->switchToScreen(name);
-                //return;
+            else if (param == "-r") {
+                // std::cerr << "screen -r command\n";
+                //screen -r <name>: goes back to that same screen
+                s_in >> name;
+                if (name.length() > 0) {
+                    this->commandHist.append(" " + name);
+                    ConsoleDriver::getInstance()->switchToScreen(name);
+                    //return;
+                }
             }
+            else if (param == "-ls") {
+                std::cerr << "screen -ls command\n";
+                this->commandHist.append("screen -ls command\n");
+            }
+            else {
+                std::cerr << "Unknown command: " << param;
+                this->commandHist.append("Unknown command: " + param);
+                // std::cerr << "Enter a command: ";
+            }
+<<<<<<< Updated upstream
         }
         else if (param == "-ls") {
             // std::cerr << "screen -ls command\n";
@@ -96,6 +105,8 @@ void MainConsole::process()
             std::cerr << "Unknown command: " << param;
             this->commandHist.append("Unknown command: " + param);
             // std::cerr << "Enter a command: ";
+=======
+>>>>>>> Stashed changes
         }
     }
     else if (command == "scheduler-test")
@@ -148,7 +159,8 @@ void MainConsole::process()
 
     //this->commandHist.append("\nEnter a command: ");
     // std::cerr << "\n\nEnter a command: ";
-}    
+
+}
 
 void MainConsole::display()
 {
@@ -175,4 +187,11 @@ void MainConsole::printHeader() const
     SetConsoleTextAttribute(color, 7);
     // std::cerr << "Enter a command: ";
     std::cerr << this->commandHist;
+}
+
+void MainConsole::lsUI() const
+{
+    std::cout << "------------------------------------------" << std::endl;
+    std::cout << "Running processes: " << std::endl;
+
 }
