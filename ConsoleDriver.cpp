@@ -88,7 +88,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
 void ConsoleDriver::switchConsole(String consoleName)
 {
     if (this->consoleTable.find(consoleName) != this->consoleTable.end()) {
-        system("cls");
+        // system("cls");
         this->previousConsole = this->currentConsole;
         this->currentConsole = this->consoleTable[consoleName];
         this->currentConsole->onEnabled();
@@ -162,8 +162,6 @@ void ConsoleDriver::setCursorPosition(int posX, int posY) const
 ConsoleDriver::ConsoleDriver()
 {
     this->running = true;
-
-    
 
     //const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
     // const std::shared_ptr<MarqueeConsole> mainConsole = std::make_shared<MarqueeConsole>();

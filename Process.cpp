@@ -1,6 +1,8 @@
 #include "Process.h"
+#include "IETThread.h"
 #include <cstdlib>
 #include <iostream>
+#include <unistd.h>
 
 // TODO: complete missing fields or functions in the once requirements are specified
 
@@ -8,13 +10,10 @@ Process::Process(String nameIn, int numInstruction)
     : uid(newUID++)
 {
     this->processName = nameIn;
-<<<<<<< Updated upstream
-    this->linesCode = 100;
-=======
     this->totalInstruction = numInstruction;
     this->remainingInstruction = numInstruction;
-    this->commandCounter = 0;
->>>>>>> Stashed changes
+    time_t curr_time = time(NULL);
+    this->timeStamp = *localtime(&curr_time);
 }
 
 int Process::getUid() const
@@ -37,6 +36,11 @@ Process::String Process::getProcessName() const
 //    return this->linesCode;
 //}
 
+int Process::getTotalInstruction() const
+{
+    return this->totalInstruction;
+}
+
 int Process::getRemainingInstructions() const 
 {
     return this->remainingInstruction;
@@ -49,24 +53,32 @@ bool Process::hasFinished() const
 
 void Process::executeInstruction()
 {
+    // std::cout << "Core: " << this->cpuCoreID << std::endl;
     if (this->remainingInstruction > 0)
     {
-        std::cout << "Executing instruction for Process " << this->uid << "; " << this->processName << "\n";
+        // std::cout << "Executing instruction for Process " << this->uid << "; " << this->processName << "\n";
         this->remainingInstruction = this->remainingInstruction - 1;
+        // Testing purposes
+        IETThread::sleep(1000);
     }
     else {
-        std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
+        // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
     }
 }
 
-void Process::incrementInstruction()
+void Process::setCpuID(int coreID)
 {
-    if (this->currentIL < this->linesCode)
-    {
-        this->currentIL++;
-    }
-
+    cpuCoreID = coreID;
 }
+
+// void Process::incrementInstruction()
+// {
+//     if (this->currentIL < this->linesCode)
+//     {
+//         this->currentIL++;
+//     }
+//
+// }
 
 int Process::newUID = 0;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include <ctime>
 #include <string>
 //
 // TODO: Complete instruction counter and more...
@@ -27,24 +28,17 @@ public:
     int getUid() const;
     void executeInstruction();
     String getProcessName() const;
-<<<<<<< Updated upstream
-    int getCurrentIL();
-    int getLinesCode();
-    void incrementInstruction();
-private:
-    String processName;
-    int currentIL = 0;
-    int linesCode = 100;
-=======
     bool hasFinished() const;
     int getRemainingInstructions() const;
+    void setCpuID(int coreID);
+    int getTotalInstruction() const;
 
 private:
+    tm timeStamp; // time this process was created
     String processName;
     int cpuCoreID = -1;
     int commandCounter;
->>>>>>> Stashed changes
-    static int newUID;
-    int uid;
+    static int newUID; 
+    int uid; // unique ID which increments on its own so don't worry bout this
 };
 
