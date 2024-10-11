@@ -4,6 +4,7 @@
 
 static constexpr int POLLING_DELAY = 10;
 
+
 class MarqueeConsole : public AConsole
 {
 public:

@@ -88,9 +88,15 @@ void MainConsole::process()
             // std::cerr << "screen -ls command\n";
             // if (name.length() > 0) {
             //     this->commandHist.append(" " + name);
-                ConsoleDriver::getInstance()->switchToScreen(SCHEDULER_CONSOLE);
+                //ConsoleDriver::getInstance()->switchToScreen(SCHEDULER_CONSOLE);
                 //return;
             // }
+            // Switch to the scheduler console
+            ConsoleDriver::getInstance()->switchToScreen(SCHEDULER_CONSOLE);
+
+            // Start the SchedulerPrototype when switching
+            // std::shared_ptr<SchedulerPrototype> scheduler = std::make_shared<SchedulerPrototype>();
+            // scheduler->startScheduler();
         }
         else {
             std::cerr << "Unknown command: " << param;
@@ -104,9 +110,9 @@ void MainConsole::process()
         // this->commandHist.append("\nscheduler-test command recognized. Doing something.\n");
         // // std::cerr << "\n\nEnter a command: ";
 
-        std::cerr << "First-Come-First-Serve Scheduler. \n";
+        // std::cerr << "First-Come-First-Serve Scheduler. \n";
         this->commandHist.append("First-Come-First-Serve Scheduler");
-        startScheduler();
+        // SchedulerPrototype.startScheduler();
     }
     else if (command == "scheduler-stop")
     {

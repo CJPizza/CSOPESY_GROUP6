@@ -10,6 +10,8 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <windows.h>
+
 #include "AConsole.h"
 
 using namespace std;
@@ -18,11 +20,13 @@ typedef std::string String;
 class SchedulerPrototype : public AConsole
 {
     public:
+        HANDLE consoleHandle;
         SchedulerPrototype();
         ~SchedulerPrototype() = default;
         void onEnabled() override;
         void process() override;
         void display() override;
+        void startScheduler(); //process
         
         struct Process
         {
@@ -38,10 +42,8 @@ class SchedulerPrototype : public AConsole
         void logPrintCommand(Process* process, string message);
         void displayUI(); //display
         void scheduler(); //onenabled
-        void startScheduler(); //process
         string getTimeString(time_t startTime);
         void cpuWorker(int coreId);
-
 
         // Global variables
         queue<Process*> readyQueue;  // Ready queue for processes
@@ -52,7 +54,8 @@ class SchedulerPrototype : public AConsole
 
         private:
             bool schedulerRunning = true;
-            const int coreCount = 4;
+            static const int coreCount = 4;
             bool cores[coreCount] = {false};  // Core availability (false = free, true = busy)
+            std::thread schedulerThread;
 };
 // Struct to hold process information

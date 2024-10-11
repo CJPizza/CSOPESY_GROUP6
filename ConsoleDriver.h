@@ -8,6 +8,7 @@
 #include "BaseScreen.h"
 #include "MainConsole.h"
 #include "MarqueeConsole.h"
+#include "SchedulerPrototype.h"
 
 typedef std::string String;
 const String MAIN_CONSOLE = "MAIN_CONSOLE";

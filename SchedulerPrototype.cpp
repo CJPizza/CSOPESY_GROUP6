@@ -11,29 +11,31 @@
 #include <algorithm>
 
 #include "SchedulerPrototype.h"
+#include "AConsole.h"
+#include "ConsoleDriver.h"
+#include "MainConsole.h"
 
 using namespace std;
 
 SchedulerPrototype::SchedulerPrototype() : AConsole(SCHEDULER_CONSOLE)
 {
+    this->name = SCHEDULER_CONSOLE;
+    this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 }
 
 void SchedulerPrototype::onEnabled()
 {
-    //threading?
+    this->startScheduler();
+    this->displayUI();
 }
 
 void SchedulerPrototype::display()
 {
-    this->displayUI();
 }
 
 void SchedulerPrototype::process()
 {
-    
 }
-
-
 
 // Helper function to get formatted time string
 string SchedulerPrototype::getTimeString(time_t rawTime)
@@ -138,7 +140,9 @@ void SchedulerPrototype::displayUI()
         cout << "------------------------------------------" << endl;
         displayMutex.unlock();
 
-        this_thread::sleep_for(chrono::seconds(1));  // Refresh every second
+        //sleep()
+        // this_thread::sleep_for(chrono::seconds(1));  // Refresh every second
+        Sleep(1);
     }
 }
 
@@ -147,11 +151,11 @@ void SchedulerPrototype::scheduler()
 {
     for (int i = 0; i < coreCount; i++)
     {
-        thread(cpuWorker, i).detach();
+        thread(&SchedulerPrototype::cpuWorker,this, i).detach();
     }
 }
 
-int main()
+void SchedulerPrototype::startScheduler()
 {
     // Simulate creating some processes and adding to ready queue
     readyQueue.push(new Process("process01", 5876));
@@ -164,17 +168,18 @@ int main()
     readyQueue.push(new Process("process08", 80));
 
     // Start the scheduler
-    thread schedulerThread(scheduler);
-    thread uiThread(displayUI);
+    std::thread schedulerThread(std::bind(&SchedulerPrototype::scheduler, this));
+    std::thread uiThread(std::bind(&SchedulerPrototype::displayUI, this));
+    // thread schedulerThread(scheduler);
+    // thread uiThread(displayUI);
 
     // Allow simulation to run for a period of time
-    this_thread::sleep_for(chrono::minutes(2));
+    // this_thread::sleep_for(chrono::minutes(2));
+    Sleep(120);
 
     // Stop the simulation
-    schedulerRunning = false;
-
+      schedulerRunning = false;
+    
     schedulerThread.join();
     uiThread.join();
-
-    return 0;
 }
