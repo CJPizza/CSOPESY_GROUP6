@@ -15,5 +15,6 @@ public:
     void printHeader() const;
     void lsUI() const;
     FCFSScheduler fcfsscheduler = FCFSScheduler(4);
+    std::vector<Process> processes;
 private:
 };

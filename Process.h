@@ -4,9 +4,9 @@
 //
 // TODO: Complete instruction counter and more...
 
+typedef std::string String;
 class Process {
 public:
-    typedef std::string String;
 
     enum ProcessState
     {
@@ -31,7 +31,11 @@ public:
     bool hasFinished() const;
     int getRemainingInstructions() const;
     void setCpuID(int coreID);
+    int getCpuID() const;
     int getTotalInstruction() const;
+    String getTimeToStr() const;
+    void deleteFile();
+    void createFile();
 
 private:
     tm timeStamp; // time this process was created
@@ -41,4 +45,3 @@ private:
     static int newUID; 
     int uid; // unique ID which increments on its own so don't worry bout this
 };
-

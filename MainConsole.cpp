@@ -22,17 +22,16 @@ MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
  */
 
     std::srand(static_cast<unsigned>(std::time(0)));
-    std::vector<Process> processes;
-    processes.emplace_back("Process_1", 10);
-    processes.emplace_back("Process_2", 10);
-    processes.emplace_back("Process_3", 10);
-    processes.emplace_back("Process_4", 10);
-    processes.emplace_back("Process_5", 10);
-    processes.emplace_back("Process_6", 10);
-    processes.emplace_back("Process_7", 10);
-    processes.emplace_back("Process_8", 10);
-    processes.emplace_back("Process_9", 10);
-    processes.emplace_back("Process_10", 10);
+    this->processes.emplace_back("Process_1", 100);
+    this->processes.emplace_back("Process_2", 100);
+    this->processes.emplace_back("Process_3", 100);
+    this->processes.emplace_back("Process_4", 100);
+    this->processes.emplace_back("Process_5", 100);
+    this->processes.emplace_back("Process_6", 100);
+    this->processes.emplace_back("Process_7", 100);
+    this->processes.emplace_back("Process_8", 100);
+    this->processes.emplace_back("Process_9", 100);
+    this->processes.emplace_back("Process_10", 100);
 
     // this->fcfsscheduler;
 
@@ -45,8 +44,9 @@ MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
     // }
     this->fcfsscheduler.sortProcessQueues();
     //
-    for (int i = 0; i < processes.size(); ++i) {
-        this->fcfsscheduler.addProcess(processes[i], i % 4);
+    for (int i = 0; i < this->processes.size(); ++i) {
+        this->processes[i].setCpuID(i % 4);
+        this->fcfsscheduler.addProcess(this->processes[i], i % 4);
     }
     this->fcfsscheduler.sortProcessQueues();
     //

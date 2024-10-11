@@ -19,7 +19,7 @@ public:
 
 	void addProcess(const Process& process, int core = 0);
 	void sortProcessQueues();
-	void runScheduler();
+	// void runScheduler();
     void run() override;
     void printProgress();
 };
