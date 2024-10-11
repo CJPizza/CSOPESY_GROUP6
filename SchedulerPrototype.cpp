@@ -10,7 +10,6 @@
 #include <random>
 #include <algorithm>
 
-<<<<<<< HEAD
 #include "SchedulerPrototype.h"
 
 using namespace std;
@@ -26,38 +25,18 @@ void SchedulerPrototype::onEnabled()
 
 void SchedulerPrototype::display()
 {
+    this->displayUI();
+}
+
+void SchedulerPrototype::process()
+{
     
 }
-//i think all these headers go to .h
-=======
-using namespace std;
 
-// Struct to hold process information
-struct Process
-{
-    string name;
-    int totalTasks;  // Total tasks to complete
-    int completedTasks;  // Completed tasks
-    time_t startTime;  // Start time
-    int coreId;  // Core where it's running
 
-    Process(string n, int t) : name(n), totalTasks(t), completedTasks(0), startTime(time(0)), coreId(-1) {}
-};
-
->>>>>>> 8d76f9538bef1230ca594d22e2aaf9d4f5ddc5fc
-// Global variables
-queue<Process*> readyQueue;  // Ready queue for processes
-vector<Process*> runningProcesses;  // Processes running on CPU
-vector<Process*> finishedProcesses; // Finished processes
-mutex queueMutex;  // Mutex for queue synchronization
-mutex displayMutex;  // Mutex for display synchronization
-
-bool schedulerRunning = true;
-const int coreCount = 4;
-bool cores[coreCount] = {false};  // Core availability (false = free, true = busy)
 
 // Helper function to get formatted time string
-string getTimeString(time_t rawTime)
+string SchedulerPrototype::getTimeString(time_t rawTime)
 {
     char buffer[80];
     struct tm* timeinfo = localtime(&rawTime);
@@ -66,7 +45,7 @@ string getTimeString(time_t rawTime)
 }
 
 // Function to log print commands to a file
-void logPrintCommand(Process* process, string message)
+void SchedulerPrototype::logPrintCommand(Process* process, string message)
 {
     ifstream checkFile(process->name + ".txt");
     bool fileExists = checkFile.good();
@@ -88,7 +67,7 @@ void logPrintCommand(Process* process, string message)
 }
 
 // Simulate work for a CPU core
-void cpuWorker(int coreId)
+void SchedulerPrototype::cpuWorker(int coreId)
 {
     // Set up the random number generator for sleep duration between 10ms to 1000ms
     random_device rd;
@@ -133,7 +112,7 @@ void cpuWorker(int coreId)
 }
 
 // Display the UI
-void displayUI()
+void SchedulerPrototype::displayUI()
 {
     while (schedulerRunning)
     {
@@ -164,7 +143,7 @@ void displayUI()
 }
 
 // Scheduler function to distribute processes
-void scheduler()
+void SchedulerPrototype::scheduler()
 {
     for (int i = 0; i < coreCount; i++)
     {

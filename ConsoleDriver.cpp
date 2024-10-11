@@ -173,6 +173,7 @@ ConsoleDriver::ConsoleDriver()
     // For MarqueeConsole demo disable MAIN_CONSOLE atm
      this->consoleTable[MAIN_CONSOLE] = this->mainConsole;
     this->consoleTable[MARQUEE_CONSOLE] = this->marqueeConsole;
+    this->consoleTable[SCHEDULER_CONSOLE] = this->schedulerConsole;
 
     // For MarqueeConsole demo disable MAIN_CONSOLE atm
     // this->switchConsole(MAIN_CONSOLE);
