@@ -1,0 +1,8 @@
+main.exe
+test.cpp
+TODO.md
+.clangd
+TODO/
+*.bak
+*.txt
+*.zip
