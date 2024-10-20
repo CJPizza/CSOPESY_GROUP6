@@ -33,13 +33,13 @@ void ConsoleDriver::destroy()
 
 HANDLE ConsoleDriver::getConsoleHandle() const
 {
-    return this->consoleHandle;
+    return this->console_handle;
 }
 
 void ConsoleDriver::drawConsole() const
 {
-    if (this->currentConsole != nullptr) {
-        this->currentConsole->display();
+    if (this->curr_console != nullptr) {
+        this->curr_console->display();
     }
     else
     {
@@ -50,8 +50,8 @@ void ConsoleDriver::drawConsole() const
 
 void ConsoleDriver::process() const
 {
-    if (this->currentConsole != nullptr) {
-        this->currentConsole->process();
+    if (this->curr_console != nullptr) {
+        this->curr_console->process();
     }
     else {
         std::cerr << "There is no assigned console. Please check." << std::endl;
@@ -60,24 +60,24 @@ void ConsoleDriver::process() const
 
 void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
 {
-    if (this->consoleTable.find(screenRef->getName()) != this->consoleTable.end())
+    if (this->console_table.find(screenRef->getName()) != this->console_table.end())
     {
         std::cerr << "Screen name " << screenRef->getName() << " already exists. Please use a different name." << std::endl;
-        this->currentConsole->commandHist.append("\nScreen name " + screenRef->getName() + " already exists. Please use a different name.\n");
+        this->curr_console->command_hist.append("\nScreen name " + screenRef->getName() + " already exists. Please use a different name.\n");
         return;
     }
-    this->consoleTable[screenRef->getName()] = screenRef;
+    this->console_table[screenRef->getName()] = screenRef;
     this->switchToScreen(screenRef->getName());
 }
 
 void ConsoleDriver::unregisterScreen(String screenName) 
 {
-    if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
-        this->consoleTable.erase(screenName);
+    if (this->console_table.find(screenName) != this->console_table.end()) {
+        this->console_table.erase(screenName);
     }
     else {
         std::cerr << "Unable to unregister " << screenName << std::endl;
-        this->currentConsole->commandHist.append("\nUnable to unregister " + screenName + "\n");
+        this->curr_console->command_hist.append("\nUnable to unregister " + screenName + "\n");
     }
 }
 
@@ -87,41 +87,39 @@ void ConsoleDriver::unregisterScreen(String screenName)
 
 void ConsoleDriver::switchConsole(String consoleName)
 {
-    if (this->consoleTable.find(consoleName) != this->consoleTable.end()) {
-        // system("cls");
-        this->previousConsole = this->currentConsole;
-        this->currentConsole = this->consoleTable[consoleName];
-        this->currentConsole->onEnabled();
-        // std::cerr << this->currentConsole->getName();
+    if (this->console_table.find(consoleName) != this->console_table.end()) {
+        system("cls");
+        this->prev_console = this->curr_console;
+        this->curr_console = this->console_table[consoleName];
+        this->curr_console->onEnabled();
+        // std::cerr << this->curr_console->getName();
     }
     else 
     {
         std::cerr << "Console name " << consoleName << " not found. Was it initialized?" << std::endl;
-        this->currentConsole->commandHist.append("\nConsole name "+consoleName+" not found. Was it initialized?\n");
+        this->curr_console->command_hist.append("\nConsole name "+consoleName+" not found. Was it initialized?\n");
     }
 }
 
 void ConsoleDriver::switchToScreen(String screenName)
 {
-    if (this->consoleTable.find(screenName) != this->consoleTable.end()) {
+    if (this->console_table.find(screenName) != this->console_table.end()) {
         system("cls");
-        // disables `Enter a command:` prompt within MainConsole when entering a screen
-        this->previousConsole = this->currentConsole;
-        this->currentConsole = this->consoleTable[screenName];
-        this->currentConsole->onEnabled();
+        this->prev_console = this->curr_console;
+        this->curr_console = this->console_table[screenName];
+        this->curr_console->onEnabled();
     }
     else {
         std::cerr << "Screen name " << screenName << " not found." << std::endl;
-        this->currentConsole->commandHist.append("\nScreen name " + screenName + " not found.\n");
-        // std::cerr << "Enter a command: ";
+        this->curr_console->command_hist.append("\nScreen name " + screenName + " not found.\n");
     }
 }
 
 void ConsoleDriver::returnToPreviousConsole()
 {
-    if (this->previousConsole != nullptr) {
-        this->switchConsole(this->previousConsole->getName());
-        this->previousConsole = nullptr;
+    if (this->prev_console != nullptr) {
+        this->switchConsole(this->prev_console->getName());
+        this->prev_console = nullptr;
     }
 }
 
@@ -131,12 +129,12 @@ void ConsoleDriver::returnToPreviousConsole()
 
 void ConsoleDriver::exitApplication() 
 {
-    if (this->previousConsole == nullptr) {
+    if (this->prev_console == nullptr) {
         this->running = false;
     }
     else {
-        this->currentConsole = this->previousConsole;
-        this->previousConsole = nullptr;
+        this->curr_console = this->prev_console;
+        this->prev_console = nullptr;
     }
 }
 
@@ -145,11 +143,6 @@ bool ConsoleDriver::isRunning() const
     return this->running;
 }
 
-// DEBUG purposes
-// void ConsoleDriver::printTest() const
-// {
-//     std::cerr << "printTest Function called" << std::endl;
-// }
 
 void ConsoleDriver::setCursorPosition(int posX, int posY) const
 {
@@ -163,14 +156,14 @@ ConsoleDriver::ConsoleDriver()
 {
     this->running = true;
 
-    //const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
-    // const std::shared_ptr<MarqueeConsole> mainConsole = std::make_shared<MarqueeConsole>();
-    // const std::shared_ptr<SchedulingConsole> mainConsole = std::make_shared<SchedulingConsole>();
-    // const std::shared_ptr<MemorySimulationConsole> mainConsole = std::make_shared<MemorySimulationConsole>();
+    //const std::shared_ptr<MainConsole> main_console = std::make_shared<MainConsole>();
+    // const std::shared_ptr<MarqueeConsole> main_console = std::make_shared<MarqueeConsole>();
+    // const std::shared_ptr<SchedulingConsole> main_console = std::make_shared<SchedulingConsole>();
+    // const std::shared_ptr<MemorySimulationConsole> main_console = std::make_shared<MemorySimulationConsole>();
 
     // For MarqueeConsole demo disable MAIN_CONSOLE atm
-     this->consoleTable[MAIN_CONSOLE] = this->mainConsole;
-    this->consoleTable[MARQUEE_CONSOLE] = this->marqueeConsole;
+    this->console_table[MAIN_CONSOLE] = this->main_console;
+    this->console_table[MARQUEE_CONSOLE] = this->marquee_console;
 
     // For MarqueeConsole demo disable MAIN_CONSOLE atm
     // this->switchConsole(MAIN_CONSOLE);

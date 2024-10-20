@@ -22,9 +22,8 @@ class BaseScreen: public AConsole
         void loadHeaderToStr();
     private:
         void printProcessInfo() const;
-        std::shared_ptr<Process> attachedProcess;
+        std::shared_ptr<Process> attached_process;
         bool refreshed = false;
-        tm timeStamp;
         // std::time_t timeCreated;
 
 };

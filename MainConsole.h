@@ -11,10 +11,10 @@ public:
     void process() override;
     void display() override;
     // void loadHeaderToStr();
-    HANDLE consoleHandle;
+    HANDLE console_handle;
     void printHeader() const;
     void lsUI() const;
-    FCFSScheduler fcfsscheduler = FCFSScheduler(4);
+    FCFSScheduler fcfs_scheduler = FCFSScheduler(4);
     std::vector<Process> processes;
 private:
 };

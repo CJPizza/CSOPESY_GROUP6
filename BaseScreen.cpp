@@ -13,11 +13,9 @@
 
 BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AConsole(processName)
 {
-    this->attachedProcess = process;
+    this->attached_process = process;
     // const auto now = std::chrono::system_clock::now();
     // this->timeCreated = std::chrono::system_clock::to_time_t(now);
-    time_t curr_time = time(NULL);
-    this->timeStamp = *localtime(&curr_time);
 }
 
 
@@ -35,12 +33,12 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 //     }
 //     std::stringstream strStream;
 //
-//     strStream << "Process: " << this->attachedProcess->getProcessName() << std::endl;
-//     strStream << "ID: " << this->attachedProcess->getUid() << std::endl;
+//     strStream << "Process: " << this->attached_process->getProcessName() << std::endl;
+//     strStream << "ID: " << this->attached_process->getUid() << std::endl;
 //     strStream << std::endl;
-//     strStream << "Current instruction line: " << this->attachedProcess->getCurrentIL()  
-//         << " / " << this->attachedProcess->getLinesCode() << std::endl;
-//     // strStream << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
+//     strStream << "Current instruction line: " << this->attached_process->getCurrentIL()  
+//         << " / " << this->attached_process->getLinesCode() << std::endl;
+//     // strStream << "Lines of code: " << this->attached_process->getLinesCode() << std::endl;
 //     strStream << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
 //         << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
 //         << time.tm_year + 1900 << ", "
@@ -49,7 +47,7 @@ BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AC
 //         << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
 //         << std::endl;
 //
-//     this->commandHist.append(strStream.str());
+//     this->command_hist.append(strStream.str());
 // }
 
 void BaseScreen::onEnabled()
@@ -61,19 +59,19 @@ void BaseScreen::onEnabled()
 void BaseScreen::process()
 {
     //put exit command here (when exit go back to main console)
-    this->commandHist.append("root:\\> ");
+    this->command_hist.append("root:\\> ");
 
     String sInput;
     std::getline(std::cin, sInput);
-    this->commandHist.append(sInput+"\n");
+    this->command_hist.append(sInput+"\n");
     if (sInput == "exit") {
         ConsoleDriver::getInstance()->returnToPreviousConsole();
     }
     else {
         std::cerr << "Unknown command: " << sInput << std::endl;
-        this->commandHist.append("Unknown command: " + sInput + "\n");
+        this->command_hist.append("Unknown command: " + sInput + "\n");
     }
-    // this->commandHist.append("\n");
+    // this->command_hist.append("\n");
 }
 
 void BaseScreen::display()
@@ -81,43 +79,39 @@ void BaseScreen::display()
     /*
      * This is where we print??
      * */
-    if (this->attachedProcess == nullptr) {
+    if (this->attached_process == nullptr) {
         std::cerr << "Process not properly attached" << std::endl;
     }
     std::cerr << "root:\\> ";
 
 }
 
-tm& BaseScreen::getTime()
-{
-    return this->timeStamp;
-}
-
 void BaseScreen::printProcessInfo() const
 {
     // char timeString[std::size("mm/dd/yyyy, hh:mm:ss")]
-    tm time = this->timeStamp;
-    String hr12;
-    if (time.tm_hour >= 12) {
-        time.tm_hour = time.tm_hour - 12;
-        hr12 = "PM";
-    }
-    else {
-        hr12 = "AM";
-    }
-    std::cerr << "Process: " << this->attachedProcess->getProcessName() << std::endl;
-    std::cerr << "ID: " << this->attachedProcess->getUid() << std::endl;
+    // tm time = this->timeStamp;
+    // String hr12;
+    // if (time.tm_hour >= 12) {
+    //     time.tm_hour = time.tm_hour - 12;
+    //     hr12 = "PM";
+    // }
+    // else {
+    //     hr12 = "AM";
+    // }
+    std::cerr << "Process: " << this->attached_process->getProcessName() << std::endl;
+    std::cerr << "ID: " << this->attached_process->getUid() << std::endl;
     std::cerr << std::endl;
-    //std::cerr << "Current instruction line: " << this->attachedProcess->getCurrentIL();
-        //<< " / " << this->attachedProcess->getLinesCode() << std::endl;
-    // std::cerr << "Lines of code: " << this->attachedProcess->getLinesCode() << std::endl;
-    std::cerr << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
-        << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
-        << time.tm_year + 1900 << ", "
-        << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
-        << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
-        << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
-        << std::endl;
-    std::cerr << this->commandHist;
+    //std::cerr << "Current instruction line: " << this->attached_process->getCurrentIL();
+        //<< " / " << this->attached_process->getLinesCode() << std::endl;
+    // std::cerr << "Lines of code: " << this->attached_process->getLinesCode() << std::endl;
+    // Time printing
+    // std::cerr << "Timestamp: " << std::setfill('0') << std::setw(2) << time.tm_mon+1 << "/"
+    //     << std::setfill('0') << std::setw(2)  << time.tm_mday << "/"
+    //     << time.tm_year + 1900 << ", "
+    //     << std::setfill('0') << std::setw(2) << time.tm_hour << ":"
+    //     << std::setfill('0') << std::setw(2) << time.tm_min << ":" 
+    //     << std::setfill('0') << std::setw(2) << time.tm_sec << " " << hr12
+    //     << std::endl;
+    std::cerr << this->command_hist;
     // std::cerr << "root:\\> ";
 }

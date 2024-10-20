@@ -50,13 +50,13 @@ class ConsoleDriver {
         ConsoleDriver& operator=(ConsoleDriver const&) {return *this;};
         static ConsoleDriver* sharedInstance;
 
-        ConsoleTable consoleTable;
-        std::shared_ptr<AConsole> currentConsole;
-        std::shared_ptr<AConsole> previousConsole;
+        ConsoleTable console_table;
+        std::shared_ptr<AConsole> curr_console;
+        std::shared_ptr<AConsole> prev_console;
         //
-        const std::shared_ptr<MainConsole> mainConsole = std::make_shared<MainConsole>();
-        const std::shared_ptr<MarqueeConsole> marqueeConsole = std::make_shared<MarqueeConsole>();
+        const std::shared_ptr<MainConsole> main_console = std::make_shared<MainConsole>();
+        const std::shared_ptr<MarqueeConsole> marquee_console = std::make_shared<MarqueeConsole>();
 
-        HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        HANDLE console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
         bool running = true;
 };

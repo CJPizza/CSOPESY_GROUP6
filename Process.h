@@ -1,6 +1,9 @@
 #pragma once
+#include "ICommand.h"
 #include <ctime>
+#include <memory>
 #include <string>
+#include <vector>
 //
 // TODO: Complete instruction counter and more...
 
@@ -16,32 +19,41 @@ public:
         FINISHED
     };
 
-    Process(String processName, int numInstrcution);
+    Process(String processName, int num_instrcution);
 
-    //Process(String processName, );
-	// Process(const Process& other) = default; // Use default if possible
-	// Process& operator=(const Process& other) = default;
-
-    int totalInstruction;
-    int remainingInstruction;
+    int total_ins; // total instruction
+    int   rem_ins; // remaining instruction
 
     int getUid() const;
+    int getCpuID() const;
+    // Instruction will be replaced by commands
+    int getTotalInstruction() const;
     void executeInstruction();
+
+    void executeCurrCommand() const;
+    void moveToNextLine();
+
+
     String getProcessName() const;
     bool hasFinished() const;
     int getRemainingInstructions() const;
-    void setCpuID(int coreID);
-    int getCpuID() const;
-    int getTotalInstruction() const;
+    void setCpuID(int core_id);
     String getTimeToStr() const;
+    String getCurrTimeToStr();
     void deleteFile();
     void createFile();
 
 private:
-    tm timeStamp; // time this process was created
-    String processName;
-    int cpuCoreID = -1;
-    int commandCounter;
-    static int newUID; 
+    static int new_uid; 
     int uid; // unique ID which increments on its own so don't worry bout this
+    tm time_stamp; // time this process was created
+    String name;
+    typedef std::vector<std::shared_ptr<ICommand>> Commands;
+    Commands command_list; // lists of command to exec
+    // add vector of commandList for command processing
+
+    int core_id = -1;
+    int command_counter;
+    ProcessState curr_state;
+
 };

@@ -7,7 +7,7 @@ public:
     AConsole(String name);
     ~AConsole() = default;
 
-    String commandHist = "";
+    String command_hist = "";
 
     String getName();
     virtual void onEnabled() = 0;

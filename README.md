@@ -1,4 +1,3 @@
 CSOPESY GROUP 6
-The main page for our entire group
 
-At the moment screen functionality is working, pass command `screen -s <process_name>` and `screen -r <process_name>` to retrieve initialized process.
+To execute the program you can either run it with your IDE, or you may run `build.sh` included in this repo that builds all cpp files and runs `main.exe`

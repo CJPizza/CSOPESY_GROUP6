@@ -7,17 +7,21 @@
 #include <fstream>
 #include <filesystem>
 
-// TODO: complete missing fields or functions in the once requirements are specified
+/*
+ * TODO: Implement ICommand and stuff, then finish executeCurrCommand executeInstruction
+ * will be deprecated.
+ */
 
-Process::Process(String nameIn, int numInstruction)
-    : uid(newUID++)
+Process::Process(String name, int num_ins)
+    : uid(new_uid++)
 {
-    this->processName = nameIn;
-    this->totalInstruction = numInstruction;
-    this->remainingInstruction = numInstruction;
+    this->name = name;
+    this->total_ins = num_ins;
+    this->rem_ins = num_ins;
     time_t curr_time = time(NULL);
-    this->timeStamp = *localtime(&curr_time);
+    this->time_stamp = *localtime(&curr_time);
     this->createFile();
+    this->curr_state = READY;
 }
 
 int Process::getUid() const
@@ -25,34 +29,24 @@ int Process::getUid() const
     return this->uid;
 }
 
-//int Process::getCurrentIL()
-//{
-//    return this->currentIL;
-//}
-
 String Process::getProcessName() const
 {
-    return this->processName;
+    return this->name;
 }
-
-//int Process::getLinesCode()
-//{
-//    return this->linesCode;
-//}
 
 int Process::getTotalInstruction() const
 {
-    return this->totalInstruction;
+    return this->total_ins;
 }
 
 int Process::getRemainingInstructions() const 
 {
-    return this->remainingInstruction;
+    return this->rem_ins;
 }
 
 bool Process::hasFinished() const 
 {
-    return this->remainingInstruction == 0;
+    return this->rem_ins == 0;
 }
 
 void Process::executeInstruction()
@@ -63,28 +57,29 @@ void Process::executeInstruction()
     {
         std::cerr << "Error opening file." << std::endl;
     }
-    if (this->remainingInstruction > 0)
+    if (this->rem_ins > 0)
     {
-        // std::cout << "Executing instruction for Process " << this->uid << "; " << this->processName << "\n";
-        this->remainingInstruction = this->remainingInstruction - 1;
-        // Testing purposes
+        this->rem_ins = this->rem_ins - 1;
         // call file append here
-        file << this->getProcessName() << "\t" << "(" << this->getTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
-        IETThread::sleep(100);
+        // appends to file `process_name.txt`
+        file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
+        // 13ms seems to be the minimum val to synchronize process execution between cores
+        // it can be adjsted to 1 but its order would not be sequential
+        IETThread::sleep(1);
     }
     else {
         // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
     }
 }
 
-void Process::setCpuID(int coreID)
+void Process::setCpuID(int core_id)
 {
-    cpuCoreID = coreID;
+    this->core_id = core_id;
 }
 
 int Process::getCpuID() const
 {
-    return this->cpuCoreID;
+    return this->core_id;
 }
 
 // void Process::incrementInstruction()
@@ -99,25 +94,37 @@ int Process::getCpuID() const
 String Process::getTimeToStr() const
 {
     char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->timeStamp);
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_stamp);
     return String(buffer);
 }
-int Process::newUID = 0;
+
+String Process::getCurrTimeToStr()
+{
+    time_t time_dump = time(NULL);
+    // this->time_stamp = *localtime(&curr_time);
+    tm curr_time = *localtime(&time_dump);
+    char buffer[80];
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &curr_time);
+    return String(buffer);
+}
+
+int Process::new_uid = 0;
 
 void Process::createFile()
 {
     this->deleteFile();
-    std::ofstream logFile(this->processName + ".txt", std::ios::app);
+    std::ofstream log_file(this->name + ".txt", std::ios::app);
     // If the file is new, write the header
-        logFile << "Process name: " << this->getProcessName() << "\n";
-        logFile << "Logs:" << "\n" << "\n";
+        log_file << "Process name: " << this->getProcessName() << "\n";
+        log_file << "Logs:" << "\n" << "\n";
     // Log the print command with timestamp and core info
-    // logFile << "(" << this->getTimeToStr() << ") Core:" <<  " \"" << message << "\"" << endl;
-    logFile.close();
+    // log_file << "(" << this->getTimeToStr() << ") Core:" <<  " \"" << message << "\"" << endl;
+    log_file.close();
 }
 
-void Process::deleteFile() {
-    String filePath = this->processName + ".txt";
+void Process::deleteFile() 
+{
+    String filePath = this->name + ".txt";
     std::filesystem::path path(filePath);
 
     // Check if the file exists
@@ -127,7 +134,8 @@ void Process::deleteFile() {
         std::filesystem::remove(path, ec);
         
         if (ec) {
-            // std::cerr << "Error deleting file: " << ec.message() << std::endl;
+            std::cerr << "Error deleting file: " << ec.message() << std::endl;
+            return;
         } else {
             // std::cout << "File deleted successfully." << std::endl;
         }
@@ -135,8 +143,14 @@ void Process::deleteFile() {
         // std::cout << "File does not exist." << std::endl;
     }
 }
-// string getName() const {
-//     return name;
-// }
-// };
 
+void Process::executeCurrCommand() const
+{
+    this->command_list[this->command_counter]->execute();
+}
+
+
+void Process::moveToNextLine()
+{
+    this->command_counter++;
+}

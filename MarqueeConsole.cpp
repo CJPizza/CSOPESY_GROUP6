@@ -41,7 +41,6 @@ void MarqueeConsole::pollKeyboard()
 				if (workerThread->sInput == "exit") {
 					this->running = false;
 					workerThread->running = false;
-					IETThread::sleep(500);
 					ConsoleDriver::getInstance()->returnToPreviousConsole();
 					workerThread->sInput.clear();
 					workerThread->xCursor = PROMPT_XCURSOR;

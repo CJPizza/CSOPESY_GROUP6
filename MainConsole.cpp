@@ -15,46 +15,12 @@
 MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
     this->name = MAIN_CONSOLE;
-    this->consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-/*
- * TODO: Move Scheduler simulation elsewhere 
- * temporary solution
- */
-
-    std::srand(static_cast<unsigned>(std::time(0)));
-    this->processes.emplace_back("Process_1", 100);
-    this->processes.emplace_back("Process_2", 100);
-    this->processes.emplace_back("Process_3", 100);
-    this->processes.emplace_back("Process_4", 100);
-    this->processes.emplace_back("Process_5", 100);
-    this->processes.emplace_back("Process_6", 100);
-    this->processes.emplace_back("Process_7", 100);
-    this->processes.emplace_back("Process_8", 100);
-    this->processes.emplace_back("Process_9", 100);
-    this->processes.emplace_back("Process_10", 100);
-
-    // this->fcfsscheduler;
-
-    // FCFSScheduler fcfsscheduler(4);
-    //
-    //
-    // for (const auto& process : processes) {
-    //     // specify cores in here since default core will alwaye be @ 0
-    //     fcfsscheduler.addProcess(process);
-    // }
-    this->fcfsscheduler.sortProcessQueues();
-    //
-    for (int i = 0; i < this->processes.size(); ++i) {
-        this->processes[i].setCpuID(i % 4);
-        this->fcfsscheduler.addProcess(this->processes[i], i % 4);
-    }
-    this->fcfsscheduler.sortProcessQueues();
-    //
+    this->console_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 }
 
 void MainConsole::onEnabled()
 {
-    // if (this->commandHist.length() == 0) {
+    // if (this->command_hist.length() == 0) {
     //     loadHeaderToStr();
     // }
 
@@ -66,13 +32,13 @@ void MainConsole::onEnabled()
 
     // ConsoleDriver::getInstance()->printTest();
     // ConsoleDriver::getInstance()->drawConsole();
-    if (this->commandHist == "")
+    if (this->command_hist == "")
     {
-        this->commandHist.append("Enter a command: ");
+        this->command_hist.append("Enter a command: ");
     }
     this->printHeader();
     // this->fcfsscheduler.runScheduler();
-    this->fcfsscheduler.start();
+    this->fcfs_scheduler.start();
 }
 
 void MainConsole::process() 
@@ -89,11 +55,11 @@ void MainConsole::process()
     s_in >> command;
     s_in >> param;
 
-    this->commandHist.append(command + " " + param);
+    this->command_hist.append(command + " " + param);
     if (command == "initialize")
     {
         std::cerr << "initialize command recognized. Doing something.\n";
-        this->commandHist.append("initialize command recognized. Doing something.\n");
+        this->command_hist.append("initialize command recognized. Doing something.\n");
         // std::cerr << "\n\nEnter a command: ";
     }
     else if (command == "screen")
@@ -103,7 +69,7 @@ void MainConsole::process()
             //std::cerr << "screen -s command: " << name << std::endl;
             //screen -s <name> : creates then add to table then go to new screeen
             if (name.length() > 0) {
-                this->commandHist.append(" " + name);
+                this->command_hist.append(" " + name);
                 std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
                 // TODO: move BaseScreen as a member of MainConsole and at MainConsole constructor we add processes initialized here 
                 // to BaseScreen as well.
@@ -117,48 +83,50 @@ void MainConsole::process()
             //screen -r <name>: goes back to that same screen
             s_in >> name;
             if (name.length() > 0) {
-                this->commandHist.append(" " + name);
+                this->command_hist.append(" " + name);
                 ConsoleDriver::getInstance()->switchToScreen(name);
                 //return;
             }
         }
         else if (param == "-ls") {
             std::cerr << "screen -ls command\n";
-            this->commandHist.append("screen -ls command\n");
-            this->fcfsscheduler.printProgress();
+            this->command_hist.append("screen -ls command\n");
+            this->fcfs_scheduler.printProgress();
         }
         else {
             std::cerr << "Unknown command: " << param;
-            this->commandHist.append("Unknown command: " + param);
+            this->command_hist.append("Unknown command: " + param);
             // std::cerr << "Enter a command: ";
         }
     }
+    else if (command == "scheduler-test")
+    {
+        /* 
+         * This would manage process generation
+         */
 
-    // else if (command == "scheduler-test")
-    // {
-    // std::cerr << "scheduler-test command recognized. Doing something.\n";
-    // this->commandHist.append("\nscheduler-test command recognized. Doing something.\n");
-    // // std::cerr << "\n\nEnter a command: ";
-
-    //     std::cerr << "First-Come-First-Serve Scheduler. \n";
-    //     this->commandHist.append("First-Come-First-Serve Scheduler");
-    //     startScheduler();
-    // }
-    // else if (command == "scheduler-stop")
-    // std::cerr << "scheduler-stop command recognized. Doing something.\n";
+    }
+    else if (command == "scheduler-stop")
+    {
+        // std::cerr << "scheduler-stop command recognized. Doing something.\n";
+        /* 
+         * This would stop process creation
+         */
+        
+    }
     // std::cerr << "\n\nEnter a command: ";
-    // this->commandHist.append("\nscheduler-stop command recognized. Doing something.\n");
+    // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
 
     else if (command == "report-util")
     {
         std::cerr << "report-util command recognized. Doing something.\n";
         // std::cerr << "\n\nEnter a command: ";
-        this->commandHist.append("\nreport-util command recognized. Doing something.\n");
+        this->command_hist.append("\nreport-util command recognized. Doing something.\n");
     }
     else if (command == "clear")
     {
         system("CLS");
-        this->commandHist = "";
+        this->command_hist = "";
         this->printHeader();
         return;
     }
@@ -176,18 +144,18 @@ void MainConsole::process()
     else
     {
         std::cerr << "Unknown command.\n";
-        this->commandHist.append("\nUnknown command.\n");
+        this->command_hist.append("\nUnknown command.\n");
         // std::cerr << "Enter a command: ";
     }
 
-    //this->commandHist.append("\nEnter a command: ");
+    //this->command_hist.append("\nEnter a command: ");
     // std::cerr << "\n\nEnter a command: ";
 }
 
 void MainConsole::display()
 {
     std::cerr << "\nEnter a command: ";
-    this->commandHist.append("\nEnter a command: ");
+    this->command_hist.append("\nEnter a command: ");
 }
 
 void MainConsole::printHeader() const
@@ -201,14 +169,14 @@ void MainConsole::printHeader() const
     std::cerr << "| |___ ___) | |_| |  __/| |___ ___) || |";
     std::cerr << "\n";
     std::cerr << " \\____|____/ \\___/|_|   |_____|____/ |_|";
-    HANDLE color = this->consoleHandle;
+    HANDLE color = this->console_handle;
     SetConsoleTextAttribute(color, 10);
     std::cerr << "\n\nHello. Welcome to the CSOPESY Command Line!" << std::endl;
     SetConsoleTextAttribute(color, 14);
     std::cerr << "Type 'exit' to quit, 'clear' to clear the screen" << std::endl;
     SetConsoleTextAttribute(color, 7);
     // std::cerr << "Enter a command: ";
-    std::cerr << this->commandHist;
+    std::cerr << this->command_hist;
 }
 
 void MainConsole::lsUI() const
