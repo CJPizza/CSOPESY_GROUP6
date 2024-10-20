@@ -6,6 +6,10 @@ void SchedulerWorker::run()
 {
     while(execute)
     {
+        /* 
+         * lock to prevent racing when storing finished processes in 
+         * finished_processes
+         */
         std::unique_lock<std::mutex> lock(*mtx);
         this->running = true;
         for (auto& process : this->processes_to_exec) {
@@ -34,7 +38,6 @@ void SchedulerWorker::stop()
 {
     this->execute = false;
 }
-
 
 SchedulerWorker::SchedulerWorker(std::vector<Process>& processes_to_exec, std::vector<Process>& finished_processes) 
     : processes_to_exec(processes_to_exec), finished_processes(finished_processes), core_id(new_id++) {

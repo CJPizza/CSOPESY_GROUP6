@@ -12,10 +12,6 @@
 class SchedulerWorker : public IETThread {
 public:
     SchedulerWorker(std::vector<Process>& processes_to_exec, std::vector<Process>& finished_processes); 
-    // ~SchedulerWorker() = default;
-    // SchedulerWorker(const SchedulerWorker&) = delete;
-    // SchedulerWorker& operator=(const SchedulerWorker&) = delete;
-
 
     bool isRunning() const;
 
@@ -25,11 +21,10 @@ public:
 private:
     inline static int new_id = 0;
     int core_id;
-    bool running = false; // corresponding to process execution
+    bool running = false; // corresponds to process execution
     bool execute;
     std::unique_ptr<std::mutex> mtx;
     std::vector<Process> &processes_to_exec;
     std::vector<Process> &finished_processes;
     // std::mutex mtx;
-    // friend class FCFSScheduler;
 };

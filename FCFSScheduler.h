@@ -20,9 +20,6 @@ public:
     void run() override;
     void printProgress();
 
-protected:
-    // std::deque<SchedulerWorker> free_threads; // stores all free threads
-
 private:
 	int num_cores;
     // TODO: Would probably move these in to a scheduler manager class

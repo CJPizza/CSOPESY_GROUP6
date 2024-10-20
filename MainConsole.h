@@ -10,7 +10,6 @@ public:
     void onEnabled() override;
     void process() override;
     void display() override;
-    // void loadHeaderToStr();
     HANDLE console_handle;
     void printHeader() const;
     void lsUI() const;

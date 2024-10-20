@@ -9,7 +9,6 @@ void MarqueeWorker::printHeader()
     std::cerr << "*****************************************" << std::endl;
     std::cerr << "* Displaying a marquee console ! *" << std::endl;
     std::cerr << "*****************************************" << std::endl;
-    // printf("%*s\n", fwidth, s);
 }
 
 
