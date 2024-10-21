@@ -42,12 +42,11 @@ void MainConsole::onEnabled()
     this->printHeader();
     // this->fcfsscheduler.runScheduler();
     //this->fcfs_scheduler.start();
-    
+
 }
 
 void MainConsole::process() 
 {
-    boolean isInitialized = false;
     // system("cls");
     String sInput;
     std::getline(std::cin, sInput);
@@ -62,114 +61,88 @@ void MainConsole::process()
     this->command_hist.append(command + " " + param);
     if (command == "initialize")
     {
-        isInitialized = true;
-        String num_cpuS, scheduler, quantum_cyclesS, batch_process_freqS, min_insS, max_insS, delay_per_execS;
-        uint32_t num_cpu, quantum_cycle, batch_process_freq, min_ins, max_ins, delay_per_exec;
-        std::ifstream MyReadFile("config.txt"); //read config.txt
-
-        while(getline(MyReadFile, textfile)){
-            std::istringstream iss(textfile);
-
-            getline(iss, num_cpuS);
-            getline(iss, scheduler);
-            getline(iss, quantum_cyclesS);
-            getline(iss, batch_process_freqS);
-            getline(iss, min_insS);
-            getline(iss, max_insS);
-            getline(iss, delay_per_execS);
-        } //NOTE: since these are all string make a converter to turn some data type to int and create checkers for validity before entering
-        MyReadFile.close();
-
-        num_cpu = std::stoi(num_cpuS);
-        quantum_cycle = std::stoi(quantum_cyclesS);
-        batch_process_freq = std::stoi(batch_process_freqS);
-        min_ins = std::stoi(min_insS);
-        max_ins = std::stoi(max_insS);
-        delay_per_exec = std::stoi(delay_per_execS);
-
-        if((num_cpu < 1 && num_cpu > 128) && (scheduler != "rr" || scheduler != "fcfs") && (quantum_cycle < 1 && quantum_cycle > pow(2,32)) && (batch_process_freq < 1 && batch_process_freq > pow(2,32)) && (min_ins < 1 && min_ins > pow(2,32)) && (max_ins < 1 && max_ins > pow(2,32)) && (delay_per_exec < 0 && delay_per_exec > pow(2,32))){
-            std::cerr << "Incorrect config.txt parameters.\n";
-            this->command_hist.append("\nIncorrect config.txt parameters.\n");
-        }
-
-        //read config.txt put that in param of scheduler start
-        this->fcfs_scheduler.start();//change this and put this into param of scheduler()
-        this->command_hist.append("initialize\n");
-    }
-    else if (command == "screen" && isInitialized)
-    {
-        if (param == "-s") {
-            s_in >> name;
-            //std::cerr << "screen -s command: " << name << std::endl;
-            //screen -s <name> : creates then add to table then go to new screeen
-            if (name.length() > 0) {
-                this->command_hist.append(" " + name);
-                std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
-                // TODO: move BaseScreen as a member of MainConsole and at MainConsole constructor we add processes initialized here 
-                // to BaseScreen as well.
-                std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
-                ConsoleDriver::getInstance()->registerScreen(newScreen);
-                //return;
-            }
-        }
-        else if (param == "-r") {
-            // std::cerr << "screen -r command\n";
-            //screen -r <name>: goes back to that same screen
-            s_in >> name;
-            if (name.length() > 0) {
-                this->command_hist.append(" " + name);
-                ConsoleDriver::getInstance()->switchToScreen(name);
-                //return;
-            }
-        }
-        else if (param == "-ls") {
-            std::cerr << "screen -ls command\n";
-            this->command_hist.append("screen -ls command\n");
-            this->fcfs_scheduler.printProgress();
-        }
-        else {
-            std::cerr << "Unknown command: " << param;
-            this->command_hist.append("Unknown command: " + param);
-            // std::cerr << "Enter a command: ";
-        }
-    }
-    else if (command == "scheduler-test" && isInitialized)
-    {
-        /* 
-         * This would manage process generation
-         */
-
-    }
-    else if (command == "scheduler-stop" && isInitialized)
-    {
-        // std::cerr << "scheduler-stop command recognized. Doing something.\n";
-        /* 
-         * This would stop process creation
-         */
-        
-    }
-    // std::cerr << "\n\nEnter a command: ";
-    // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
-
-    else if (command == "report-util" && isInitialized)
-    {
-        std::cerr << "report-util command recognized. Doing something.\n";
-        // std::cerr << "\n\nEnter a command: ";
-        this->command_hist.append("\nreport-util command recognized. Doing something.\n");
-    }
-    else if (command == "clear" && isInitialized)
-    {
-        system("CLS");
-        this->command_hist = "";
-        this->printHeader();
+        this->initialized = true;
+        this->sched_manager = new SchedulerManager();
+        // DEBUG Purposes:
+        this->fcfs_scheduler.start();
         return;
     }
-    else if (command == "marquee" && isInitialized)
-    {
+    if (initialized) {
+        if (command == "screen")
+        {
+            if (param == "-s") {
+                s_in >> name;
+                //std::cerr << "screen -s command: " << name << std::endl;
+                //screen -s <name> : creates then add to table then go to new screeen
+                if (name.length() > 0) {
+                    this->command_hist.append(" " + name);
+                    std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
+                    // TODO: move BaseScreen as a member of MainConsole and at MainConsole constructor we add processes initialized here 
+                    // to BaseScreen as well.
+                    std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
+                    ConsoleDriver::getInstance()->registerScreen(newScreen);
+                    //return;
+                }
+            }
+            else if (param == "-r") {
+                // std::cerr << "screen -r command\n";
+                //screen -r <name>: goes back to that same screen
+                s_in >> name;
+                if (name.length() > 0) {
+                    this->command_hist.append(" " + name);
+                    ConsoleDriver::getInstance()->switchToScreen(name);
+                    //return;
+                }
+            }
+            else if (param == "-ls") {
+                std::cerr << "screen -ls command\n";
+                this->command_hist.append("screen -ls command\n");
+                this->fcfs_scheduler.printProgress();
+            }
+            else {
+                std::cerr << "Unknown command: " << param;
+                this->command_hist.append("Unknown command: " + param);
+                // std::cerr << "Enter a command: ";
+            }
+        }
+        else if (command == "scheduler-test")
+        {
+            /* 
+             * This would manage process generation
+             */
 
-        ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
+        }
+        else if (command == "scheduler-stop")
+        {
+            // std::cerr << "scheduler-stop command recognized. Doing something.\n";
+            /* 
+             * This would stop process creation
+             */
+
+        }
+        // std::cerr << "\n\nEnter a command: ";
+        // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
+
+        else if (command == "report-util")
+        {
+            std::cerr << "report-util command recognized. Doing something.\n";
+            // std::cerr << "\n\nEnter a command: ";
+            this->command_hist.append("\nreport-util command recognized. Doing something.\n");
+        }
+        else if (command == "clear")
+        {
+            system("CLS");
+            this->command_hist = "";
+            this->printHeader();
+            return;
+        }
+        else if (command == "marquee")
+        {
+
+            ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
+        }
     }
-    else if (command == "exit")
+    if (command == "exit")
     {
         std::cerr << "exit command recognized. Exiting application.\n";
         ConsoleDriver::getInstance()->exitApplication();
@@ -177,7 +150,7 @@ void MainConsole::process()
     }
     else
     {
-        if(isInitialized == false)
+        if(initialized == false)
         {
             std::cerr << "Run initialize command first.\n";
             this->command_hist.append("\nUnknown command.\n");    

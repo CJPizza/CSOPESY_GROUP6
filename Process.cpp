@@ -70,6 +70,7 @@ void Process::executeInstruction()
     else {
         // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
     }
+    file.close();
 }
 
 void Process::setCpuID(int core_id)

@@ -11,7 +11,7 @@
 class FCFSScheduler : public IETThread
 {
 public:
-	// FCFSScheduler(int cores) : numCores(cores), processQueues(cores) {}
+	// FCFSScheduler(int cores) : num_cores(cores), process_queues(cores) {}
     FCFSScheduler(int cores);
 
 	void addProcess(const Process& process, int core = 0);
