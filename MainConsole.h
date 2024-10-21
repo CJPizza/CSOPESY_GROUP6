@@ -14,9 +14,9 @@ public:
     HANDLE console_handle;
     void printHeader() const;
     void lsUI() const;
-    FCFSScheduler fcfs_scheduler = FCFSScheduler(4);
+    FCFSScheduler fcfs_scheduler = FCFSScheduler(10);
     std::vector<Process> processes;
 private:
     SchedulerManager* sched_manager;
-    bool initialized = true; // checks if initialized command was called 
+    bool initialized = false; // checks if initialized command was called 
 };
