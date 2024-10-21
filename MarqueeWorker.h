@@ -29,26 +29,26 @@ static constexpr int PROMPT_XCURSOR = 37;
 
 class MarqueeWorker : public IETThread
 {
-public:
-	typedef std::string String;
-	MarqueeWorker() = default;
-	~MarqueeWorker() = default;
+  public:
+    typedef std::string String;
+    MarqueeWorker() = default;
+    ~MarqueeWorker() = default;
 
-	void setDirX();
-	void setDirY();
-	void run() override;
+    void setDirX();
+    void setDirY();
+    void run() override;
 
-	String commandHist = "";
+    String commandHist = "";
     String sInput = "";
 
-	int x = 1;
-	int y = YBOUNDS_MIN + 1;
-	int xCursor = PROMPT_XCURSOR; // xCoord for cursor after printing prompt
-	bool forward = true;
-	bool running = true;
-	bool up = false;
+    int x = 1;
+    int y = YBOUNDS_MIN + 1;
+    int xCursor = PROMPT_XCURSOR; // xCoord for cursor after printing prompt
+    bool forward = true;
+    bool running = true;
+    bool up = false;
 
-	void printHeader();
-	void printPromptHist();
-private:
+    void printHeader();
+    void printPromptHist();
+  private:
 };

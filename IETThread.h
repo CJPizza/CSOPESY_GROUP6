@@ -1,14 +1,14 @@
 #pragma once
 class IETThread
 {
-public:
-	IETThread() = default;
-	~IETThread() = default;
+  public:
+    IETThread() = default;
+    ~IETThread() = default;
 
-	void start();
-	static void sleep(int ms);
+    void start();
+    static void sleep(int ms);
 
-protected:
-	virtual void run() = 0;
+  protected:
+    virtual void run() = 0;
 };
 

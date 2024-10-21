@@ -6,7 +6,7 @@ static constexpr int POLLING_DELAY = 10;
 
 class MarqueeConsole : public AConsole
 {
-public:
+  public:
     MarqueeConsole();
     ~MarqueeConsole() = default;
 
@@ -19,7 +19,7 @@ public:
     String commandHist = "";
 
     MarqueeWorker* workerThread = new MarqueeWorker();
-private:
+  private:
     bool running = false;
 };
 

@@ -126,22 +126,26 @@ void Process::createFile()
 void Process::deleteFile() 
 {
     String filePath = this->name + ".txt";
-    std::filesystem::path path(filePath);
+    // std::filesystem::path path(filePath);
 
     // Check if the file exists
-    if (std::filesystem::exists(path)) {
-        // Attempt to remove the file
-        std::error_code ec; // For error handling
-        std::filesystem::remove(path, ec);
-        
-        if (ec) {
-            std::cerr << "Error deleting file: " << ec.message() << std::endl;
-            return;
-        } else {
-            // std::cout << "File deleted successfully." << std::endl;
-        }
-    } else {
-        // std::cout << "File does not exist." << std::endl;
+    // if (std::filesystem::exists(path)) {
+    //     // Attempt to remove the file
+    //     std::error_code ec; // For error handling
+    //     std::filesystem::remove(path, ec);
+    //     
+    //     if (ec) {
+    //         std::cerr << "Error deleting file: " << ec.message() << std::endl;
+    //         return;
+    //     } else {
+    //         // std::cout << "File deleted successfully." << std::endl;
+    //     }
+    // } else {
+    //     // std::cout << "File does not exist." << std::endl;
+    // }
+    int status = std::remove(filePath.c_str());
+    if (status != 0) {
+      std::cerr << "Error deleting file";
     }
 }
 
