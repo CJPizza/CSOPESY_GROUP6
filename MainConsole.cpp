@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <cmath>
 
 #include "MainConsole.h"
 #include "BaseScreen.h"
@@ -62,27 +63,40 @@ void MainConsole::process()
     if (command == "initialize")
     {
         isInitialized = true;
-        String num_cpu, scheduler, quantum_cycles, batch_process_freq, min_ins, max_ins, delay_per_exec;
+        String num_cpuS, scheduler, quantum_cyclesS, batch_process_freqS, min_insS, max_insS, delay_per_execS;
+        uint32_t num_cpu, quantum_cycle, batch_process_freq, min_ins, max_ins, delay_per_exec;
         std::ifstream MyReadFile("config.txt"); //read config.txt
 
         while(getline(MyReadFile, textfile)){
             std::istringstream iss(textfile);
 
-            getline(iss, num_cpu);
+            getline(iss, num_cpuS);
             getline(iss, scheduler);
-            getline(iss, quantum_cycles);
-            getline(iss, batch_process_freq);
-            getline(iss, min_ins);
-            getline(iss, max_ins);
-            getline(iss, delay_per_exec);
-        }
+            getline(iss, quantum_cyclesS);
+            getline(iss, batch_process_freqS);
+            getline(iss, min_insS);
+            getline(iss, max_insS);
+            getline(iss, delay_per_execS);
+        } //NOTE: since these are all string make a converter to turn some data type to int and create checkers for validity before entering
         MyReadFile.close();
 
+        num_cpu = std::stoi(num_cpuS);
+        quantum_cycle = std::stoi(quantum_cyclesS);
+        batch_process_freq = std::stoi(batch_process_freqS);
+        min_ins = std::stoi(min_insS);
+        max_ins = std::stoi(max_insS);
+        delay_per_exec = std::stoi(delay_per_execS);
+
+        if((num_cpu < 1 && num_cpu > 128) && (scheduler != "rr" || scheduler != "fcfs") && (quantum_cycle < 1 && quantum_cycle > pow(2,32)) && (batch_process_freq < 1 && batch_process_freq > pow(2,32)) && (min_ins < 1 && min_ins > pow(2,32)) && (max_ins < 1 && max_ins > pow(2,32)) && (delay_per_exec < 0 && delay_per_exec > pow(2,32))){
+            std::cerr << "Incorrect config.txt parameters.\n";
+            this->command_hist.append("\nIncorrect config.txt parameters.\n");
+        }
+
         //read config.txt put that in param of scheduler start
-        this->fcfs_scheduler.start();//change this and put this into paramyy
+        this->fcfs_scheduler.start();//change this and put this into param of scheduler()
         this->command_hist.append("initialize\n");
     }
-    else if (command == "screen" && isInitialized)//&& isInitialized
+    else if (command == "screen" && isInitialized)
     {
         if (param == "-s") {
             s_in >> name;
