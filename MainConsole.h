@@ -1,6 +1,7 @@
 #pragma once
 #include "AConsole.h"
 #include "FCFSScheduler.h"
+#include "SchedulerManager.h"
 
 class MainConsole : public AConsole 
 {
@@ -16,4 +17,6 @@ public:
     FCFSScheduler fcfs_scheduler = FCFSScheduler(4);
     std::vector<Process> processes;
 private:
+    SchedulerManager* sched_manager;
+    bool initialized = true; // checks if initialized command was called 
 };

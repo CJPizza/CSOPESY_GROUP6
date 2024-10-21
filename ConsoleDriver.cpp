@@ -88,7 +88,7 @@ void ConsoleDriver::unregisterScreen(String screenName)
 void ConsoleDriver::switchConsole(String consoleName)
 {
     if (this->console_table.find(consoleName) != this->console_table.end()) {
-        system("cls");
+        // system("cls");
         this->prev_console = this->curr_console;
         this->curr_console = this->console_table[consoleName];
         this->curr_console->onEnabled();
