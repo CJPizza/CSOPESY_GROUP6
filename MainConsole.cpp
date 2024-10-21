@@ -1,10 +1,12 @@
 #include <cstdio>
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <windows.h>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "MainConsole.h"
 #include "BaseScreen.h"
@@ -38,19 +40,20 @@ void MainConsole::onEnabled()
     }
     this->printHeader();
     // this->fcfsscheduler.runScheduler();
-    this->fcfs_scheduler.start();
+    //this->fcfs_scheduler.start();
+    
 }
 
 void MainConsole::process() 
 {
-
+    boolean isInitialized = false;
     // system("cls");
     String sInput;
     std::getline(std::cin, sInput);
 
     // Split the input into command and parameters
     std::stringstream s_in(sInput);
-    String command, param, name;
+    String command, param, name, textfile;
 
     s_in >> command;
     s_in >> param;
@@ -58,11 +61,28 @@ void MainConsole::process()
     this->command_hist.append(command + " " + param);
     if (command == "initialize")
     {
-        std::cerr << "initialize command recognized. Doing something.\n";
-        this->command_hist.append("initialize command recognized. Doing something.\n");
-        // std::cerr << "\n\nEnter a command: ";
+        isInitialized = true;
+        String num_cpu, scheduler, quantum_cycles, batch_process_freq, min_ins, max_ins, delay_per_exec;
+        std::ifstream MyReadFile("config.txt"); //read config.txt
+
+        while(getline(MyReadFile, textfile)){
+            std::istringstream iss(textfile);
+
+            getline(iss, num_cpu);
+            getline(iss, scheduler);
+            getline(iss, quantum_cycles);
+            getline(iss, batch_process_freq);
+            getline(iss, min_ins);
+            getline(iss, max_ins);
+            getline(iss, delay_per_exec);
+        }
+        MyReadFile.close();
+
+        //read config.txt put that in param of scheduler start
+        this->fcfs_scheduler.start();//change this and put this into paramyy
+        this->command_hist.append("initialize\n");
     }
-    else if (command == "screen")
+    else if (command == "screen" && isInitialized)//&& isInitialized
     {
         if (param == "-s") {
             s_in >> name;
@@ -99,14 +119,14 @@ void MainConsole::process()
             // std::cerr << "Enter a command: ";
         }
     }
-    else if (command == "scheduler-test")
+    else if (command == "scheduler-test" && isInitialized)
     {
         /* 
          * This would manage process generation
          */
 
     }
-    else if (command == "scheduler-stop")
+    else if (command == "scheduler-stop" && isInitialized)
     {
         // std::cerr << "scheduler-stop command recognized. Doing something.\n";
         /* 
@@ -117,20 +137,20 @@ void MainConsole::process()
     // std::cerr << "\n\nEnter a command: ";
     // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
 
-    else if (command == "report-util")
+    else if (command == "report-util" && isInitialized)
     {
         std::cerr << "report-util command recognized. Doing something.\n";
         // std::cerr << "\n\nEnter a command: ";
         this->command_hist.append("\nreport-util command recognized. Doing something.\n");
     }
-    else if (command == "clear")
+    else if (command == "clear" && isInitialized)
     {
         system("CLS");
         this->command_hist = "";
         this->printHeader();
         return;
     }
-    else if (command == "marquee")
+    else if (command == "marquee" && isInitialized)
     {
 
         ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
@@ -143,6 +163,12 @@ void MainConsole::process()
     }
     else
     {
+        if(isInitialized == false)
+        {
+            std::cerr << "Run initialize command first.\n";
+            this->command_hist.append("\nUnknown command.\n");    
+        }
+
         std::cerr << "Unknown command.\n";
         this->command_hist.append("\nUnknown command.\n");
         // std::cerr << "Enter a command: ";
