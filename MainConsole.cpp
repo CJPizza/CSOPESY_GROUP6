@@ -43,6 +43,7 @@ void MainConsole::onEnabled()
   }
   this->printHeader();
   GlobalScheduler::getInstance()->loadConfig();
+  GlobalScheduler::getInstance()->startScheduler();
   // this->fcfsscheduler.runScheduler();
   //this->fcfs_scheduler.start();
 }
@@ -70,9 +71,8 @@ void MainConsole::process()
       command_hist.append("\nAlready initialized");
     }
     this->initialized = true;
-    this->sched_manager = new SchedulerManager();
     // DEBUG Purposes:
-    this->fcfs_scheduler.start();
+    // this->fcfs_scheduler.start();
     return;
   }
   if (initialized) {
@@ -109,7 +109,8 @@ void MainConsole::process()
       else if (param == "-ls") {
         // std::cerr << "screen -ls command\n";
         // this->command_hist.append("screen -ls command\n");
-        String str_progress = this->fcfs_scheduler.strProgress();
+        // String str_progress = this->fcfs_scheduler.strProgress();
+        String str_progress = GlobalScheduler::getInstance()->strProcessesInfo();
         std::cerr << str_progress;
         this->command_hist.append("\n"+str_progress);
       }

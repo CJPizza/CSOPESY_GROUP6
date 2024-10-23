@@ -1,11 +1,14 @@
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <sys/types.h>
 
 #include "GlobalScheduler.h"
 #include "AScheduler.h"
+#include "ConsoleDriver.h"
+#include "FCFSScheduler.h"
 
 GlobalScheduler* GlobalScheduler::sharedInstance = nullptr;
 
@@ -32,6 +35,11 @@ void GlobalScheduler::destroy()
     delete sharedInstance;
 }
 
+// std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
+// {
+//
+// }
+
 /*
  * Create a function that generates processes when
  * MainConsole calls scheduler-test
@@ -41,19 +49,26 @@ void GlobalScheduler::generateProcesses()
 
 }
 
-void GlobalScheduler::addProcess(std::shared_ptr<Process> newProcess)
+void GlobalScheduler::addProcess(std::shared_ptr<Process> new_process)
 {
-  // add the process to the appropriate scheduler
-
+  // if the process already exists
+  if (findProcess(new_process->getProcessName()) != nullptr)
+  {
+    return;
+  }
+  this->scheduler->addProcess(new_process);
+  ConsoleDriver::getInstance()->registerScreen(std::make_shared<BaseScreen>(new_process, new_process->getProcessName()));
 }
 
-std::shared_ptr<Process> GlobalScheduler::findProcess(String process_name) const
+std::shared_ptr<Process> GlobalScheduler::findProcess(String process_name) 
 {
-
+  return processes[process_name];
 }
 
 void GlobalScheduler::loadConfig()
 {
+  config_kvs configs;
+
   config_kvs map_scheduler = {
     // maps string to corresponding int as representation when parsing config.txt
     {"fcfs", 0},
@@ -81,20 +96,28 @@ void GlobalScheduler::loadConfig()
       std::string value;
       if( std::getline(is_line, value) ) {
         if (key == "scheduler") {
-          this->config[key] = map_scheduler[value];
+          configs[key] = map_scheduler[value];
         } else {
-          this->config[key] = std::stoi(value);
+          configs[key] = std::stoi(value);
         }
         // std::cout << key << ": " << value << "\n";
       }
     }
   }
 
-  if(config["scheduler"] == 0)
+  // save configs into variable
+  this->num_cpu = configs["num_cpu"];
+  this->quantum_cycles = configs["quantum_cycles"];
+  this->batch_process_freq = configs["batch_process_freq"];
+  this->max_ins = configs["max_ins"];
+  this->min_ins = configs["min_ins"];
+  this->delay_per_exec = configs["delay_per_exec"];
+
+  if(configs["scheduler"] == 0)
   {
-    this->scheduler = new FCFSScheduler();
+    this->scheduler = new FCFSScheduler(num_cpu);
   } else {
-    // scheduler = new RRScheduler
+    // if scheduler is ROUND_ROBIN add here
   }
 
   // If you want to check what the contents of config are
@@ -108,4 +131,23 @@ void GlobalScheduler::loadConfig()
 void GlobalScheduler::tick()
 {
   this->scheduler->execute();
+}
+
+String GlobalScheduler::strProcessesInfo() const
+{
+  std::stringstream str_stream;
+  str_stream << "Running Processes: \n";
+
+  return str_stream.str();
+}
+
+SchedulerWorker GlobalScheduler::getSchedWorker()
+{
+  return this->sched_worker;
+}
+
+void GlobalScheduler::startScheduler() const
+{
+  this->scheduler->init();
+  this->scheduler->start();
 }
