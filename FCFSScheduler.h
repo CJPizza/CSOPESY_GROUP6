@@ -12,7 +12,6 @@ class FCFSScheduler : public AScheduler {
 public:
   FCFSScheduler(int num_cpu);
   ~FCFSScheduler() = default;
-
   // void addProcess(std::shared_ptr<Process> process);
 
   void init() override;
@@ -27,9 +26,6 @@ public:
 private:
   int num_cpu;
   std::vector<CPUWorker> cpu_workers;
-  std::vector<String> processes_order; // contains keys for table in GlobalScheduler order to when the processes were added
-  // std::vector<std::shared_ptr<Process>> process_queues; // process queue
-  // SchedulerWorker sched_worker();
   int delay_per_exec = 0;
   std::unordered_map<String, std::shared_ptr<Process>> processes;
   std::vector<std::shared_ptr<Process>> ready_queue;

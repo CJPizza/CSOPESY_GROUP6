@@ -17,8 +17,9 @@ Process::Process(String name, int num_ins)
     this->name = name;
     this->total_ins = num_ins;
     this->rem_ins = num_ins;
-    time_t curr_time = time(NULL);
-    this->time_stamp = *localtime(&curr_time);
+    time_t time_dump = time(NULL);
+    tm curr_time = *localtime(&time_dump);
+    this->time_created = curr_time;
     this->createFile();
     this->curr_state = READY;
 }
@@ -59,12 +60,7 @@ void Process::executeInstruction()
     if (this->rem_ins > 0)
     {
         this->rem_ins = this->rem_ins - 1;
-        // call file append here
-        // appends to file `process_name.txt`
-        file << this->getProcessName() << "\t" << "(" << this->getTimeStartToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
-        // 13ms seems to be the minimum val to synchronize process execution between cores
-        // it can be adjsted to 1 but its order would not be sequential
-        IETThread::sleep(1);
+        file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
     }
     else {
         // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
@@ -84,27 +80,48 @@ int Process::getCpuID() const
 
 void Process::setFinished()
 {
-  time_t curr_time = time(NULL);
-  this->time_finished = *localtime(&curr_time);
+  time_t time_dump = time(0);
+  tm curr_time = *localtime(&time_dump);
+  this->time_finished = curr_time;
   this->curr_state = FINISHED;
 }
 
 void Process::setRunning()
 {
+  time_t time_dump = time(0);
+  tm curr_time = *localtime(&time_dump);
+  this->time_executed = curr_time;
   this->curr_state = RUNNING;
 }
 
 String Process::getTimeStartToStr() const
 {
     char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_stamp);
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_created);
     return String(buffer);
 }
 
-String Process::getTimeEndToStr()
+String Process::getTimeStartedToStr() const
+{
+    char buffer[80];
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_created);
+    return String(buffer);
+}
+
+String Process::getTimeEndToStr() const
 {
     char buffer[80];
     strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_finished);
+    return String(buffer);
+}
+
+String Process::getCurrTimeToStr() const
+{
+    time_t time_dump = time(NULL);
+    // this->time_created = *localtime(&curr_time);
+    tm curr_time = *localtime(&time_dump);
+    char buffer[80];
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &curr_time);
     return String(buffer);
 }
 

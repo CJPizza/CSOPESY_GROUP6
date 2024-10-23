@@ -11,6 +11,21 @@ void CPUWorker::assignProcess(std::shared_ptr<Process> process)
   // std::cout << "CPU is assigned Process: " << this->process->getProcessName() << "\n";
 }
 
+std::shared_ptr<Process> CPUWorker::getCurrentProcess() const
+{
+  return this->process;
+}
+
+void CPUWorker::setExecuting(bool executing)
+{
+  this->executing = executing;
+}
+
+int CPUWorker::getCoreID() const
+{
+  return this->uid;
+}
+
 void CPUWorker::run()
 {
   // std::cout << "CPU is running now\n";
@@ -25,5 +40,5 @@ void CPUWorker::run()
   }
   // std::cout << "executing...";
   process->executeInstruction();
-  IETThread::sleep(1);
+  IETThread::sleep(5);
 }

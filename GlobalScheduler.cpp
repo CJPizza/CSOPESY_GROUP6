@@ -52,7 +52,7 @@ void GlobalScheduler::generateProcesses()
   // addProcess(new_process);
 
 
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 20; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
   }
