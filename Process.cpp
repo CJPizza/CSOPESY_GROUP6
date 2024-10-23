@@ -65,7 +65,7 @@ void Process::executeInstruction()
         file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
         // 13ms seems to be the minimum val to synchronize process execution between cores
         // it can be adjsted to 1 but its order would not be sequential
-        IETThread::sleep(1);
+        IETThread::sleep(13);
     }
     else {
         // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";

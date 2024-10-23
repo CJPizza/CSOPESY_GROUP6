@@ -1,15 +1,11 @@
-#include <chrono>
 #include <ctime>
 #include <iostream>
 #include <memory>
-#include <iomanip>
 #include <ostream>
 #include <string>
-#include <sstream>
 
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
-#include "MainConsole.h"
 
 BaseScreen::BaseScreen(std::shared_ptr<Process> process, String processName): AConsole(processName)
 {
@@ -65,19 +61,19 @@ void BaseScreen::process()
     std::getline(std::cin, sInput);
     this->command_hist.append(sInput+"\n");
     if(sInput == "process-smi"){
-        if(this->attached_process->getRemainingInstructions() == this->attached_process->getTotalInstruction()){
+        if(!this->attached_process->getRemainingInstructions()){
             std::cerr << "Finished!" << std::endl;
+        } else {
+          std::cerr << "Current instruction line: " << attached_process->getTotalInstruction() - this->attached_process->getRemainingInstructions() << "\n";
+          std::cerr << "Lines of code: " << this->attached_process->getTotalInstruction() << "\n";
         }
 
-        std::cerr << "Current instruction line: " << this->attached_process->getRemainingInstructions() << "\n";
-        std::cerr << "Lines of code: " << this->attached_process->getTotalInstruction() << "\n";
         //if curr instruction == line of code print "Finished!"
     }
     else if (sInput == "exit") {
-        if(this->attached_process->getRemainingInstructions() == this->attached_process->getTotalInstruction()){
-            //if exit and curr instruction == line of code print cant go back na
-            //remove from console table ? but then if we do this it could create duplicate processes (in terms of name)   
-            //or we can add boolean na if isFinished == true then cant go back na
+        if(this->attached_process->getRemainingInstructions() == 0){
+          // if process execution is done unregister screen from ConsoleDriver
+          ConsoleDriver::getInstance()->unregisterScreen(attached_process->getProcessName());
         }
         ConsoleDriver::getInstance()->returnToPreviousConsole();
     }

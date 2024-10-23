@@ -13,6 +13,7 @@
 #include "MainConsole.h"
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
+#include "GlobalScheduler.h"
 #include "Process.h"
 #include "FCFSScheduler.h"
 
@@ -41,9 +42,9 @@ void MainConsole::onEnabled()
     this->command_hist.append("Enter a command: ");
   }
   this->printHeader();
+  GlobalScheduler::getInstance()->loadConfig();
   // this->fcfsscheduler.runScheduler();
   //this->fcfs_scheduler.start();
-
 }
 
 void MainConsole::process() 
@@ -62,6 +63,12 @@ void MainConsole::process()
   this->command_hist.append(command + " " + param);
   if (command == "initialize")
   {
+    // if initialize is already called
+    if (initialized)
+    {
+      std::cout << "Already initialized";
+      command_hist.append("\nAlready initialized");
+    }
     this->initialized = true;
     this->sched_manager = new SchedulerManager();
     // DEBUG Purposes:
@@ -75,14 +82,18 @@ void MainConsole::process()
         s_in >> name;
         //std::cerr << "screen -s command: " << name << std::endl;
         //screen -s <name> : creates then add to table then go to new screeen
+        /*
+         * Creates a process then instantly executes using whatever scheduler selected in 
+         * config.txt
+         */
         if (name.length() > 0) {
           this->command_hist.append(" " + name);
-          std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
+          std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 0);
           // TODO: move BaseScreen as a member of MainConsole and at MainConsole constructor we add processes initialized here 
           // to BaseScreen as well.
           std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
+
           ConsoleDriver::getInstance()->registerScreen(newScreen);
-          //return;
         }
       }
       else if (param == "-r") {
@@ -144,6 +155,11 @@ void MainConsole::process()
 
       ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
     }
+    else {
+      std::cerr << "Unknown command: " << param;
+      this->command_hist.append("Unknown command: " + param);
+      // std::cerr << "Enter a command: ";
+    }
   }
   if (command == "exit")
   {
@@ -155,8 +171,8 @@ void MainConsole::process()
   {
     if(!initialized)
     {
-      std::cerr << "Run initialize command first.\n";
-      this->command_hist.append("\nUnknown command.\n");    
+      std::cerr << "Unknown command: " << param;
+      this->command_hist.append("Unknown command: " + param);
     }
 
     // std::cerr << "Unknown command.\n";
