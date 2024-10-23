@@ -6,9 +6,9 @@
 #include <sys/types.h>
 
 #include "GlobalScheduler.h"
-#include "AScheduler.h"
 #include "ConsoleDriver.h"
 #include "FCFSScheduler.h"
+#include "Process.h"
 
 GlobalScheduler* GlobalScheduler::sharedInstance = nullptr;
 
@@ -46,23 +46,34 @@ void GlobalScheduler::destroy()
  */
 void GlobalScheduler::generateProcesses()
 {
+  int num_ins = 1000;
+  // std::shared_ptr<Process> new_process = std::make_shared<Process>("Process_1", num_ins);
+  // this->scheduler->addProcess(new_process);
+  // addProcess(new_process);
 
+
+  for (int i = 0; i < 10; i++) {
+    std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
+    addProcess(new_process);
+  }
 }
 
 void GlobalScheduler::addProcess(std::shared_ptr<Process> new_process)
 {
+  // adds to process_table within GlobalScheduler and adds it to the scheduler as well
   // if the process already exists
-  if (findProcess(new_process->getProcessName()) != nullptr)
-  {
-    return;
-  }
   this->scheduler->addProcess(new_process);
   ConsoleDriver::getInstance()->registerScreen(std::make_shared<BaseScreen>(new_process, new_process->getProcessName()));
 }
 
+int GlobalScheduler::getDelayPerExec() const 
+{
+  return this->delay_per_exec;
+}
+
 std::shared_ptr<Process> GlobalScheduler::findProcess(String process_name) 
 {
-  return processes[process_name];
+  return scheduler->findProcess(process_name);
 }
 
 void GlobalScheduler::loadConfig()
@@ -106,12 +117,12 @@ void GlobalScheduler::loadConfig()
   }
 
   // save configs into variable
-  this->num_cpu = configs["num_cpu"];
-  this->quantum_cycles = configs["quantum_cycles"];
-  this->batch_process_freq = configs["batch_process_freq"];
-  this->max_ins = configs["max_ins"];
-  this->min_ins = configs["min_ins"];
-  this->delay_per_exec = configs["delay_per_exec"];
+  this->num_cpu = configs["num-cpu"];
+  this->quantum_cycles = configs["quantum-cycles"];
+  this->batch_process_freq = configs["batch-process-freq"];
+  this->max_ins = configs["max-ins"];
+  this->min_ins = configs["min-ins"];
+  this->delay_per_exec = configs["delay-per-exec"];
 
   if(configs["scheduler"] == 0)
   {
@@ -119,6 +130,10 @@ void GlobalScheduler::loadConfig()
   } else {
     // if scheduler is ROUND_ROBIN add here
   }
+  // std::cout << "Config:\n";
+  // for (const std::pair<const String, int> & n : configs){
+  //   std::cout << n.first << ": " << n.second << "/" << n.second << "\n";
+  // }
 
   // If you want to check what the contents of config are
   // for (const std::pair<const String, int>& n : config){
@@ -130,18 +145,16 @@ void GlobalScheduler::loadConfig()
 
 void GlobalScheduler::tick()
 {
+  // std::cout << "Tick is called";
   this->scheduler->execute();
 }
 
 String GlobalScheduler::strProcessesInfo() const
 {
-  std::stringstream str_stream;
-  str_stream << "Running Processes: \n";
-
-  return str_stream.str();
+  return this->scheduler->returnProcessInfo();
 }
 
-SchedulerWorker GlobalScheduler::getSchedWorker()
+SchedulerWorker& GlobalScheduler::getSchedWorker()
 {
   return this->sched_worker;
 }

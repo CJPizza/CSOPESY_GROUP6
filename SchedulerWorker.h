@@ -15,5 +15,4 @@ public:
 
 private:
   bool running = false;
-
 };

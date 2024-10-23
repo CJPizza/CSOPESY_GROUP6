@@ -5,7 +5,6 @@
 #include <ctime>
 #include <unistd.h>
 #include <fstream>
-#include <filesystem>
 
 /*
  * TODO: Implement ICommand and stuff, then finish executeCurrCommand executeInstruction
@@ -62,10 +61,10 @@ void Process::executeInstruction()
         this->rem_ins = this->rem_ins - 1;
         // call file append here
         // appends to file `process_name.txt`
-        file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
+        file << this->getProcessName() << "\t" << "(" << this->getTimeStartToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
         // 13ms seems to be the minimum val to synchronize process execution between cores
         // it can be adjsted to 1 but its order would not be sequential
-        IETThread::sleep(13);
+        IETThread::sleep(1);
     }
     else {
         // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
@@ -83,33 +82,31 @@ int Process::getCpuID() const
     return this->core_id;
 }
 
-// void Process::incrementInstruction()
-// {
-//     if (this->currentIL < this->linesCode)
-//     {
-//         this->currentIL++;
-//     }
-//
-// }
+void Process::setFinished()
+{
+  time_t curr_time = time(NULL);
+  this->time_finished = *localtime(&curr_time);
+  this->curr_state = FINISHED;
+}
 
-String Process::getTimeToStr() const
+void Process::setRunning()
+{
+  this->curr_state = RUNNING;
+}
+
+String Process::getTimeStartToStr() const
 {
     char buffer[80];
     strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_stamp);
     return String(buffer);
 }
 
-String Process::getCurrTimeToStr()
+String Process::getTimeEndToStr()
 {
-    time_t time_dump = time(NULL);
-    // this->time_stamp = *localtime(&curr_time);
-    tm curr_time = *localtime(&time_dump);
     char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &curr_time);
+    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_finished);
     return String(buffer);
 }
-
-int Process::new_uid = 0;
 
 void Process::createFile()
 {
@@ -127,22 +124,6 @@ void Process::deleteFile()
 {
     String filePath = this->name + ".txt";
     // std::filesystem::path path(filePath);
-
-    // Check if the file exists
-    // if (std::filesystem::exists(path)) {
-    //     // Attempt to remove the file
-    //     std::error_code ec; // For error handling
-    //     std::filesystem::remove(path, ec);
-    //     
-    //     if (ec) {
-    //         std::cerr << "Error deleting file: " << ec.message() << std::endl;
-    //         return;
-    //     } else {
-    //         // std::cout << "File deleted successfully." << std::endl;
-    //     }
-    // } else {
-    //     // std::cout << "File does not exist." << std::endl;
-    // }
     int status = std::remove(filePath.c_str());
     if (status != 0) {
       std::cerr << "Error deleting file";
@@ -158,4 +139,9 @@ void Process::executeCurrCommand() const
 void Process::moveToNextLine()
 {
     this->command_counter++;
+}
+
+Process::ProcessState Process::getCurrState()
+{
+  return this->curr_state;
 }

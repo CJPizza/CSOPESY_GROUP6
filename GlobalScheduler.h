@@ -27,11 +27,12 @@ class GlobalScheduler {
         void addProcess(std::shared_ptr<Process> newProcess); // adds process to the selected scheduler
         std::shared_ptr<Process> findProcess(String process_name);
 
-        SchedulerWorker getSchedWorker();
-
         String strProcessesInfo() const;
 
+        SchedulerWorker& getSchedWorker();
         void tick(); // emulates CPU tick?
+        
+        int getDelayPerExec() const;
     private:
         GlobalScheduler() = default;
         ~GlobalScheduler() = default;
@@ -39,7 +40,7 @@ class GlobalScheduler {
         GlobalScheduler& operator=(GlobalScheduler const&) {return *this;};
         static GlobalScheduler* sharedInstance;
 
-        process_kvs processes;
+        // process_kvs processes;
 
         AScheduler* scheduler;
 

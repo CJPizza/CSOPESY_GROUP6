@@ -38,15 +38,20 @@ public:
     bool hasFinished() const;
     int getRemainingInstructions() const;
     void setCpuID(int core_id);
-    String getTimeToStr() const;
-    String getCurrTimeToStr();
+    String getTimeStartToStr() const;
+    String getTimeEndToStr();
     void deleteFile();
     void createFile();
 
+    void setFinished();
+    void setRunning();
+    ProcessState getCurrState();
+
 private:
-    static int new_uid; 
+    inline static int new_uid = 0; 
     int uid; // unique ID which increments on its own so don't worry bout this
     tm time_stamp; // time this process was created
+    tm time_finished; // time finished
     String name;
     typedef std::vector<std::shared_ptr<ICommand>> Commands;
     Commands command_list; // lists of command to exec

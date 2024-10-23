@@ -67,7 +67,6 @@ void ConsoleDriver::registerScreen(std::shared_ptr<BaseScreen> screenRef)
         return;
     }
     this->console_table[screenRef->getName()] = screenRef;
-    this->switchToScreen(screenRef->getName());
 }
 
 void ConsoleDriver::unregisterScreen(String screenName) 

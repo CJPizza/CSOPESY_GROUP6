@@ -1,9 +1,10 @@
 #pragma once
+#include <memory>
+#include <unordered_map>
 
 #include "CPUWorker.h"
 #include "IETThread.h"
 #include "Process.h"
-#include <unordered_map>
 
 static const String FCFS_SCHEDULER_NAME = "FCFSScheduler";
 static const String ROUND_ROBIN_NAME = "RRScheduler";
@@ -20,19 +21,17 @@ public:
   AScheduler(SchedulingAlgorithm scheduling_algo);
   ~AScheduler() = default;
 
-
-  void addProcess(std::shared_ptr<Process> process);
-  std::shared_ptr<Process> findProcess(String process_name);
+  virtual void addProcess(std::shared_ptr<Process> process) = 0;
+  virtual std::shared_ptr<Process> findProcess(String process_name) = 0;
+  virtual std::unordered_map<String, std::shared_ptr<Process>>& getProcesses() = 0;
+  virtual String returnProcessInfo() const = 0; // returns process info
   void run() override;
   void stop();
 
   virtual void init() = 0;
   virtual void execute() = 0;
 
-private:
+protected:
   // all the processes in the scheduler
-  std::unordered_map<String, std::shared_ptr<Process>> processes;
-  std::vector<CPUWorker> cpu_workers;
 
-  friend class GlobalScheduler;
 };

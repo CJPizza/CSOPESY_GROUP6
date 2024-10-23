@@ -15,7 +15,6 @@
 #include "ConsoleDriver.h"
 #include "GlobalScheduler.h"
 #include "Process.h"
-#include "FCFSScheduler.h"
 
 MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
@@ -42,8 +41,6 @@ void MainConsole::onEnabled()
     this->command_hist.append("Enter a command: ");
   }
   this->printHeader();
-  GlobalScheduler::getInstance()->loadConfig();
-  GlobalScheduler::getInstance()->startScheduler();
   // this->fcfsscheduler.runScheduler();
   //this->fcfs_scheduler.start();
 }
@@ -70,9 +67,11 @@ void MainConsole::process()
       std::cout << "Already initialized";
       command_hist.append("\nAlready initialized");
     }
+    GlobalScheduler::getInstance()->loadConfig();
+    GlobalScheduler::getInstance()->generateProcesses();
+    GlobalScheduler::getInstance()->startScheduler();
     this->initialized = true;
     // DEBUG Purposes:
-    // this->fcfs_scheduler.start();
     return;
   }
   if (initialized) {
@@ -94,6 +93,7 @@ void MainConsole::process()
           std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
 
           ConsoleDriver::getInstance()->registerScreen(newScreen);
+          ConsoleDriver::getInstance()->switchToScreen(newProcess->getProcessName());
         }
       }
       else if (param == "-r") {
