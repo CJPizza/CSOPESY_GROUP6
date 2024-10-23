@@ -14,6 +14,9 @@ class SchedulerManager {
         ~SchedulerManager();
 
         void generateProcesses(); // generateProcesses needed for scheduler-test
+        void stopGenerateProcesses(); //scheduler-stop
+        int getMinIns();
+        int getMaxIns();
 
     private:
         int num_cpus = 0; // number of logical cores

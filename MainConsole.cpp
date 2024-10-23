@@ -8,12 +8,14 @@
 #include <vector>
 #include <sstream>
 #include <cmath>
+#include <random>
 
 #include "MainConsole.h"
 #include "BaseScreen.h"
 #include "ConsoleDriver.h"
 #include "Process.h"
 #include "FCFSScheduler.h"
+#include "SchedulerManager.h"
 
 MainConsole::MainConsole(): AConsole(MAIN_CONSOLE)
 {
@@ -50,6 +52,7 @@ void MainConsole::process()
     // system("cls");
     String sInput;
     std::getline(std::cin, sInput);
+    int proclines;
 
     // Split the input into command and parameters
     std::stringstream s_in(sInput);
@@ -64,7 +67,7 @@ void MainConsole::process()
         this->initialized = true;
         this->sched_manager = new SchedulerManager();
         // DEBUG Purposes:
-        this->fcfs_scheduler.start();
+        this->fcfs_scheduler.start();//
         return;
     }
     if (initialized) {
@@ -76,7 +79,11 @@ void MainConsole::process()
                 //screen -s <name> : creates then add to table then go to new screeen
                 if (name.length() > 0) {
                     this->command_hist.append(" " + name);
-                    std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, 50);
+                    std::random_device rd;
+                    std::mt19937 gen(rd());
+                    std::uniform_int_distribution<> distrib(this->sched_manager->getMinIns(), this->sched_manager->getMaxIns());
+                    proclines = distrib(gen);
+                    std::shared_ptr<Process> newProcess = std::make_shared<Process>(name, proclines); //change 50
                     // TODO: move BaseScreen as a member of MainConsole and at MainConsole constructor we add processes initialized here 
                     // to BaseScreen as well.
                     std::shared_ptr<BaseScreen> newScreen = std::make_shared<BaseScreen>(newProcess, newProcess->getProcessName());
@@ -90,14 +97,18 @@ void MainConsole::process()
                 s_in >> name;
                 if (name.length() > 0) {
                     this->command_hist.append(" " + name);
+                    //get the current process name of this and check if its finished
+                    if(->hasFinished()){
+                        std::cerr << "Process " << name << " not found.";
+                    }
                     ConsoleDriver::getInstance()->switchToScreen(name);
                     //return;
                 }
             }
             else if (param == "-ls") {
-                std::cerr << "screen -ls command\n";
+                // std::cerr << "screen -ls command\n";
                 this->command_hist.append("screen -ls command\n");
-                this->fcfs_scheduler.printProgress();
+                this->fcfs_scheduler.printProgress(); //change this
             }
             else {
                 std::cerr << "Unknown command: " << param;
@@ -111,14 +122,20 @@ void MainConsole::process()
              * This would manage process generation
              */
 
+            this->sched_manager->generateProcesses();
+
+            this->command_hist.append("scheduler-test");
         }
         else if (command == "scheduler-stop")
         {
+
             // std::cerr << "scheduler-stop command recognized. Doing something.\n";
             /* 
              * This would stop process creation
              */
-
+            
+            this->sched_manager->stopGenerateProcesses();
+            this->command_hist.append("scheduler-stop");
         }
         // std::cerr << "\n\nEnter a command: ";
         // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
