@@ -8,6 +8,7 @@
 
 static const String FCFS_SCHEDULER_NAME = "FCFSScheduler";
 static const String ROUND_ROBIN_NAME = "RRScheduler";
+const static String BORDER_H = "--------------------------------------";
 
 class AScheduler : public IETThread {
 public:

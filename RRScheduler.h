@@ -8,12 +8,11 @@
 #include "Process.h"
 #include "SchedulerWorker.h"
 
-// const static String BORDER_H = "--------------------------------------";
 
-class FCFSScheduler : public AScheduler {
+class RRScheduler : public AScheduler {
 public:
-  FCFSScheduler(int num_cpu);
-  ~FCFSScheduler() = default;
+  RRScheduler(int num_cpu);
+  ~RRScheduler() = default;
   // void addProcess(std::shared_ptr<Process> process);
 
   void init() override;
