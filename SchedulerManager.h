@@ -1,3 +1,4 @@
+#pragma once
 #include <unordered_map>
 
 #include "FCFSScheduler.h"
@@ -19,6 +20,7 @@ class SchedulerManager {
         int getMaxIns();
 
     private:
+        int cpu_cycle_count = 0; // current cpu cycle
         int num_cpus = 0; // number of logical cores
         int quantum_cycles = -1; // quantum cycle for round robin_scheduler; initially set to -1 in cases
                                  // where different scheduler will not utilize this
