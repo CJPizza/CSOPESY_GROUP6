@@ -23,7 +23,7 @@ void SchedulerWorker::run()
             this->finished_processes.push_back(process);
             this->processes_to_exec.erase(this->processes_to_exec.begin());
         }   
-        lock.unlock();
+        //lock.unlock();
         this->running = false;
         IETThread::sleep(1);
     }

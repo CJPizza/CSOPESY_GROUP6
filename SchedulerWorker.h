@@ -22,7 +22,7 @@ private:
     inline static int new_id = 0;
     int core_id;
     bool running = false; // corresponds to process execution
-    bool execute;
+    bool execute = true;
     std::unique_ptr<std::mutex> mtx;
     std::vector<Process> &processes_to_exec;
     std::vector<Process> &finished_processes;
