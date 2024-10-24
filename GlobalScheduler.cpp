@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -35,27 +36,50 @@ void GlobalScheduler::destroy()
     delete sharedInstance;
 }
 
-// std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
-// {
-//
-// }
+std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
+{
+  int num_ins;
+  std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(process_counter++), num_ins);
+  // if (scheduler->findProcess(new_process->getProcessName()) == nullptr) {
+  //   return nullptr;
+  // }
+  // if process already exists
+  while (scheduler->findProcess(new_process->getProcessName()) != nullptr) {
+    new_process = std::make_shared<Process>(process_prefix + std::to_string(process_counter++), num_ins);
+  }
+  return new_process;
+}
 
 /*
  * Create a function that generates processes when
  * MainConsole calls scheduler-test
  */
+
 void GlobalScheduler::generateProcesses()
 {
+  /*
+   * Testing purposes
+   */
   int num_ins = 1000;
-  // std::shared_ptr<Process> new_process = std::make_shared<Process>("Process_1", num_ins);
-  // this->scheduler->addProcess(new_process);
-  // addProcess(new_process);
 
-
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 11; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
   }
+  
+  /*
+   * TODO: finish generateProcesses
+   */
+}
+
+uint32_t GlobalScheduler::getCpuCycle() const
+{
+  return cpu_cycle;
+}
+
+void GlobalScheduler::incrementCycle()
+{
+  this->cpu_cycle++;
 }
 
 void GlobalScheduler::addProcess(std::shared_ptr<Process> new_process)

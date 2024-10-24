@@ -60,6 +60,7 @@ void Process::executeInstruction()
     if (this->rem_ins > 0)
     {
         this->rem_ins = this->rem_ins - 1;
+        // writes to file
         file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
     }
     else {

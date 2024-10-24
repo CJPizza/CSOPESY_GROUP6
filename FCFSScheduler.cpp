@@ -4,6 +4,7 @@
 #include "Process.h"
 #include "SchedulerWorker.h"
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <sstream>
 
@@ -66,53 +67,61 @@ std::unordered_map<String, std::shared_ptr<Process>>& FCFSScheduler::getProcesse
 
 String FCFSScheduler::returnProcessInfo() const
 {
-  std::stringstream str_stream;
-  str_stream << "Processes Size: " << processes.size() << "\n";
-  str_stream << "finished_processes size: " << finished_processes.size() << "\n";
-  str_stream << "ready_queue size: " << ready_queue.size() << "\n";
-  str_stream << "Running Processes: \n";
+  std::stringstream str_stream, running_stream;
+  int cpu_utilized_ctr = 0;
+  // Debugging purposes
+  // str_stream << "Processes Size: " << processes.size() << "\n";
+  // str_stream << "finished_processes size: " << finished_processes.size() << "\n";
+  // str_stream << "ready_queue size: " << ready_queue.size() << "\n";
+  str_stream << "CPU Utilization: ";
+  running_stream << BORDER_H << "\n";
+  running_stream << "Running Processes: \n";
   for (auto& cpu : cpu_workers) {
-    if (cpu.getCurrentProcess()->getCurrState() == Process::RUNNING) {
-      str_stream << cpu.getCurrentProcess()->getProcessName() << "\t" << "(" << cpu.getCurrentProcess()->getTimeStartedToStr() << ")" << "\t" << "Core: " << cpu.getCurrentProcess()->getCpuID() << "\t" << cpu.getCurrentProcess()->getTotalInstruction() - cpu.getCurrentProcess()->getRemainingInstructions() << " / " << cpu.getCurrentProcess()->getTotalInstruction() << "\n";
+    if (cpu.getCurrentProcess() != nullptr && (cpu.getCurrentProcess()->getCurrState() == Process::RUNNING)) {
+      cpu_utilized_ctr = cpu_utilized_ctr + 1;
+      running_stream << cpu.getCurrentProcess()->getProcessName() << "\t" << "(" << cpu.getCurrentProcess()->getTimeStartedToStr() << ")" << "\t" << "Core: " << cpu.getCurrentProcess()->getCpuID() << "\t" << cpu.getCurrentProcess()->getTotalInstruction() - cpu.getCurrentProcess()->getRemainingInstructions() << " / " << cpu.getCurrentProcess()->getTotalInstruction() << "\n";
     }
   }
+  str_stream << (cpu_utilized_ctr * 100 / cpu_workers.size())  << "%" << "\n";
+  str_stream << "Cores used: " << cpu_utilized_ctr << "\n";
+  str_stream << "Cores available: " << cpu_workers.size() - cpu_utilized_ctr << "\n";
+  str_stream << running_stream.str();
 
   str_stream << "Finished Processes: \n";
   for (auto& curr_process : finished_processes) {
     str_stream << curr_process->getProcessName() << "\t" << "(" << curr_process->getTimeEndToStr() << ")" << "\t" << "Core: " << curr_process->getCpuID() << "\t" << "Finished" << "\n";
   }
+  str_stream << BORDER_H << "\n";
 
   return str_stream.str();
 }
 
 void FCFSScheduler::execute()
 {
-  // std::cout << "FCFSScheduler is executing";
+  
+  // stops SchedulerWorker while loop
   if((finished_processes.size() == processes.size()) && ready_queue.empty())
   {
-    // stops SchedulerWorker while loop
+    // std::cout << "Stopping SchedulerWorker\n";
     GlobalScheduler::getInstance()->getSchedWorker().update(false);
   }
 
-  // need to add delay here so that updating of Process FINISHED state can keep up
-  IETThread::sleep(1);
-
   for (auto& cpu : cpu_workers) {
     {
-      std::scoped_lock lock(this->mtx);
-      // need to add (finished_processes.size() < processes.size()) if we don't for last num_cpu processes would double
-      if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED) && (finished_processes.size() < processes.size())){
-        // cpu.assignProcess(ready_queue.front());
-        finished_processes.push_back(cpu.getCurrentProcess());
-        if (!ready_queue.empty())
-        {
-          cpu.assignProcess(ready_queue.front());
-          ready_queue.erase(ready_queue.begin());
+      if (cpu.getCurrentProcess() != nullptr) {
+        if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED) && !cpu.getExecuting()) {
+          finished_processes.push_back(cpu.getCurrentProcess());
+          cpu.clearProcess();
         }
       }
-      // cpu.executing = true;
+      if (!cpu.getExecuting() && !ready_queue.empty())
+      {
+        // Assigning of ready_queue to CPUWorkers
+        cpu.assignProcess(ready_queue.front());
+        ready_queue.erase(ready_queue.begin());
+        cpu.setExecuting(true);
+      }
     }
-    // std::cout << "Core: " <<  cpu.uid << ": is working" << "\n";
     cpu.start();
   }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 
@@ -29,10 +30,12 @@ class GlobalScheduler {
 
         String strProcessesInfo() const;
 
-        SchedulerWorker& getSchedWorker();
+        SchedulerWorker& getSchedWorker(); // might change this into a shared_ptr
         void tick(); // emulates CPU tick?
         
         int getDelayPerExec() const;
+        uint32_t getCpuCycle() const;
+        void incrementCycle();
     private:
         GlobalScheduler() = default;
         ~GlobalScheduler() = default;
@@ -51,6 +54,7 @@ class GlobalScheduler {
         int min_ins; // minimum instruction per process
         int max_ins; // maximum instruction per process
         int delay_per_exec; // delay in ms per execution
+        uint32_t cpu_cycle = 0;
         SchedulerWorker sched_worker;
 
         /* 

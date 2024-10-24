@@ -4,6 +4,7 @@
 #include "Process.h"
 #include <memory>
 #include <mutex>
+#include <vector>
 
 class CPUWorker : public IETThread {
 public:
@@ -18,7 +19,10 @@ public:
   void assignProcess(std::shared_ptr<Process> process);
   std::shared_ptr<Process> getCurrentProcess() const;
 
+  bool getExecuting() const;
   void setExecuting(bool executing);
+
+  void clearProcess();
 
 private:
   bool executing = false;

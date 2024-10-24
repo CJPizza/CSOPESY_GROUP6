@@ -135,8 +135,6 @@ void MainConsole::process()
        */
 
     }
-    // std::cerr << "\n\nEnter a command: ";
-    // this->command_hist.append("\nscheduler-stop command recognized. Doing something.\n");
 
     else if (command == "report-util")
     {

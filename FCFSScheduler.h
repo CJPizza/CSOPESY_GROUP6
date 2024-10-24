@@ -8,6 +8,8 @@
 #include "Process.h"
 #include "SchedulerWorker.h"
 
+const static String BORDER_H = "--------------------------------------";
+
 class FCFSScheduler : public AScheduler {
 public:
   FCFSScheduler(int num_cpu);
@@ -26,9 +28,13 @@ public:
 private:
   int num_cpu;
   std::vector<CPUWorker> cpu_workers;
+  
+  bool sched_test = false;
   int delay_per_exec = 0;
+
   std::unordered_map<String, std::shared_ptr<Process>> processes;
   std::vector<std::shared_ptr<Process>> ready_queue;
+  std::vector<std::shared_ptr<Process>> running_processes;
   std::vector<std::shared_ptr<Process>> finished_processes;
   std::mutex mtx;
 
