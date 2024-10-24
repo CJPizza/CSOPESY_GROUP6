@@ -69,7 +69,7 @@ void MainConsole::process()
     }
     GlobalScheduler::getInstance()->loadConfig();
     // If you want to test generating some processes during initialization
-    // GlobalScheduler::getInstance()->generateProcesses();
+    GlobalScheduler::getInstance()->generateProcesses();
     GlobalScheduler::getInstance()->startScheduler();
     this->initialized = true;
     // DEBUG Purposes:
@@ -140,9 +140,10 @@ void MainConsole::process()
 
     else if (command == "report-util")
     {
-      std::cerr << "report-util command recognized. Doing something.\n";
+      // std::cerr << "report-util command recognized. Doing something.\n";
       // std::cerr << "\n\nEnter a command: ";
-      this->command_hist.append("\nreport-util command recognized. Doing something.\n");
+      // this->command_hist.append("\nreport-util command recognized. Doing something.\n");
+      GlobalScheduler::getInstance()->logToFile();
     }
     else if (command == "clear")
     {

@@ -27,6 +27,7 @@ void GlobalScheduler::initialize()
 {
     if (sharedInstance == nullptr) {
         sharedInstance = new GlobalScheduler();
+
     } else {
         std::cerr << "GlobalScheduler already initialized." << std::endl;
     }
@@ -53,6 +54,16 @@ std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
   return new_process;
 }
 
+void GlobalScheduler::logToFile() const
+{
+  // remove csopesy-log.txt first
+  String file_path = LOG_FILE;
+  std::remove(file_path.c_str());
+  std::ofstream log_file(file_path);
+
+  // write process info from scheduler
+  log_file << scheduler->returnProcessInfo();
+}
 /*
  * This function adds the initial processes for testing purposes
  */

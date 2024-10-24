@@ -94,7 +94,7 @@ String FCFSScheduler::returnProcessInfo() const
         << std::setw(15) << (std::to_string(cpu.getCurrentProcess()->getTotalInstruction() - cpu.getCurrentProcess()->getRemainingInstructions()) 
             + " / " 
             + std::to_string(cpu.getCurrentProcess()->getTotalInstruction()))
-        << std::endl;  // Move to the next line
+        << std::endl;  
     }
   }
 
@@ -154,17 +154,24 @@ void FCFSScheduler::execute()
           cpu.clearProcess();
         }
       }
-      if (!cpu.getExecuting() && !ready_queue.empty())
-      {
-        // Assigning of ready_queue to CPUWorkers
-        cpu.assignProcess(ready_queue.front());
-        ready_queue.erase(ready_queue.begin());
-        cpu.setExecuting(true);
+      else {
+        if (!cpu.getExecuting() && !ready_queue.empty())
+        {
+          // Assigning of ready_queue to CPUWorkers
+          cpu.assignProcess(ready_queue.front());
+          ready_queue.erase(ready_queue.begin());
+          cpu.setExecuting(true);
+        }
+        else if (!cpu.getExecuting() && ready_queue.empty())
+        {
+          break;
+        }
       }
     }
     cpu.start();
   }
-  IETThread::sleep(1);
+  // if you want a more in sync process line execution increment add a 1ms sleep
+  // IETThread::sleep(1);
   IETThread::sleep(delay_per_exec); // delay per execution
 }
 
