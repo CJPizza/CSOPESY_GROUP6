@@ -62,6 +62,7 @@ void MainConsole::process()
     s_in >> param;
 
     this->command_hist.append(command + " " + param);
+
     if (command == "initialize")
     {
         this->initialized = true;
@@ -95,15 +96,24 @@ void MainConsole::process()
                 // std::cerr << "screen -r command\n";
                 //screen -r <name>: goes back to that same screen
                 s_in >> name;
-                if (name.length() > 0) {
+                if (name.length() > 0) 
+                {
                     this->command_hist.append(" " + name);
                     //get the current process name of this and check if its finished
-                    if(->hasFinished()){
-                        std::cerr << "Process " << name << " not found.";
+                    auto curprocess = process_table.find(name);
+
+                    if (curprocess != process_table.end())
+                    {
+                        if (curprocess -> second -> hasFinished())
+                        {
+                            std::cerr << "Process " << name << " has finished.\n";
+                        }
+                        else
+                        {
+                            ConsoleDriver::getInstance()->switchToScreen(name);
+                        }
                     }
-                    ConsoleDriver::getInstance()->switchToScreen(name);
-                    //return;
-                }
+            }
             }
             else if (param == "-ls") {
                 // std::cerr << "screen -ls command\n";

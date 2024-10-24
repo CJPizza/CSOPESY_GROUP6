@@ -18,5 +18,6 @@ public:
     std::vector<Process> processes;
 private:
     SchedulerManager* sched_manager;
-    bool initialized = false; // checks if initialized command was called 
+    bool initialized = false; // checks if initialized command was called
+    std::unordered_map<std::string, std::shared_ptr<Process>> process_table;
 };
