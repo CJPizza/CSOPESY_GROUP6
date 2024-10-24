@@ -12,6 +12,8 @@
  * scheduling method based on `config.txt`
  */
 
+const static String LOG_FILE = "csopesy-log.txt";
+
 class GlobalScheduler {
     public:
         typedef std::unordered_map<String, int> config_kvs;
@@ -40,6 +42,8 @@ class GlobalScheduler {
 
         void startSchedTest();
         void stopSchedTest();
+
+        void logToFile() const;
     private:
         GlobalScheduler() = default;
         ~GlobalScheduler() = default;
