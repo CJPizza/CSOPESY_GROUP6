@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <sstream>
 #include <string>
 #include <sys/types.h>
@@ -38,38 +39,33 @@ void GlobalScheduler::destroy()
 
 std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
 {
-  int num_ins;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distrib(min_ins, max_ins);
+  int num_ins = distrib(gen);
   std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(process_counter++), num_ins);
-  // if (scheduler->findProcess(new_process->getProcessName()) == nullptr) {
-  //   return nullptr;
-  // }
-  // if process already exists
+  // loops until new_process does not exists in processes table within the scheduler
   while (scheduler->findProcess(new_process->getProcessName()) != nullptr) {
+    // DEBUGGING
+    // std::cout << "Creating Process: " << new_process->getProcessName() << "\n";
     new_process = std::make_shared<Process>(process_prefix + std::to_string(process_counter++), num_ins);
   }
   return new_process;
 }
 
 /*
- * Create a function that generates processes when
- * MainConsole calls scheduler-test
+ * This function adds the initial processes for testing purposes
  */
-
 void GlobalScheduler::generateProcesses()
 {
   /*
    * Testing purposes
    */
   int num_ins = 1000;
-
   for (int i = 0; i < 11; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
   }
-  
-  /*
-   * TODO: finish generateProcesses
-   */
 }
 
 uint32_t GlobalScheduler::getCpuCycle() const
@@ -98,6 +94,21 @@ int GlobalScheduler::getDelayPerExec() const
 std::shared_ptr<Process> GlobalScheduler::findProcess(String process_name) 
 {
   return scheduler->findProcess(process_name);
+}
+
+int GlobalScheduler::getBatchFreq() const
+{
+  return this->batch_process_freq;
+}
+
+void GlobalScheduler::startSchedTest()
+{
+  this->scheduler->startSchedTest();
+}
+
+void GlobalScheduler::stopSchedTest()
+{
+  this->scheduler->stopSchedTest();
 }
 
 void GlobalScheduler::loadConfig()
@@ -188,3 +199,4 @@ void GlobalScheduler::startScheduler() const
   this->scheduler->init();
   this->scheduler->start();
 }
+

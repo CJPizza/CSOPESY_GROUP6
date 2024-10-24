@@ -25,12 +25,16 @@ public:
   std::unordered_map<String, std::shared_ptr<Process>>& getProcesses() override;
   String returnProcessInfo() const override;
 
+  void startSchedTest() override;
+  void stopSchedTest() override;
+
 private:
   int num_cpu;
   std::vector<CPUWorker> cpu_workers;
   
   bool sched_test = false;
   int delay_per_exec = 0;
+  int batch_process_freq = 0;
 
   std::unordered_map<String, std::shared_ptr<Process>> processes;
   std::vector<std::shared_ptr<Process>> ready_queue;

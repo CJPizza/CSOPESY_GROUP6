@@ -68,7 +68,8 @@ void MainConsole::process()
       command_hist.append("\nAlready initialized");
     }
     GlobalScheduler::getInstance()->loadConfig();
-    GlobalScheduler::getInstance()->generateProcesses();
+    // If you want to test generating some processes during initialization
+    // GlobalScheduler::getInstance()->generateProcesses();
     GlobalScheduler::getInstance()->startScheduler();
     this->initialized = true;
     // DEBUG Purposes:
@@ -125,6 +126,7 @@ void MainConsole::process()
       /* 
        * This would manage process generation
        */
+      GlobalScheduler::getInstance()->startSchedTest();
 
     }
     else if (command == "scheduler-stop")
@@ -133,7 +135,7 @@ void MainConsole::process()
       /* 
        * This would stop process creation
        */
-
+      GlobalScheduler::getInstance()->stopSchedTest();
     }
 
     else if (command == "report-util")

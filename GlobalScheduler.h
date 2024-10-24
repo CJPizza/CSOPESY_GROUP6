@@ -34,8 +34,12 @@ class GlobalScheduler {
         void tick(); // emulates CPU tick?
         
         int getDelayPerExec() const;
+        int getBatchFreq() const;
         uint32_t getCpuCycle() const;
         void incrementCycle();
+
+        void startSchedTest();
+        void stopSchedTest();
     private:
         GlobalScheduler() = default;
         ~GlobalScheduler() = default;

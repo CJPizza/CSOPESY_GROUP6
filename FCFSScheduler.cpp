@@ -3,10 +3,13 @@
 #include "GlobalScheduler.h"
 #include "Process.h"
 #include "SchedulerWorker.h"
+#include <iomanip>
+#include <ios>
 #include <iostream>
 #include <memory>
 #include <mutex>
 #include <sstream>
+#include <string>
 
 void FCFSScheduler::init()
 {
@@ -15,6 +18,7 @@ void FCFSScheduler::init()
   // first put a process into a thread so that they execute at the same time??
   // create logical cpus or cpu worker
   this->delay_per_exec = GlobalScheduler::getInstance()->getDelayPerExec();
+  this->batch_process_freq = GlobalScheduler::getInstance()->getBatchFreq();
 
   for (int i = 0; i < num_cpu; i++) {
     // std::cout << "loop is executing\n";
@@ -24,14 +28,16 @@ void FCFSScheduler::init()
   // initially move first num_cpu processes in ready queue to cpu_worker threads
   for (auto& cpu_worker : cpu_workers) {
     // assign to process workers then remove in the queue
-    if(this->ready_queue.empty())
+    if(!this->ready_queue.empty())
     {
-      std::cout << "ready_queue is empty\n";
+      cpu_worker.assignProcess(ready_queue.front());
+      ready_queue.erase(ready_queue.begin());
+      cpu_worker.setExecuting(true);
     }
-    std::cout << "Core: " << cpu_worker.getCoreID() << " is being assigned Process: " << ready_queue.front()->getProcessName() << "\n";
-    cpu_worker.assignProcess(ready_queue.front());
-    ready_queue.erase(ready_queue.begin());
-    cpu_worker.setExecuting(true);
+    // else {
+    // std::cout << "ready_queue is empty\n";
+    // }
+    // std::cout << "Core: " << cpu_worker.getCoreID() << " is being assigned Process: " << ready_queue.front()->getProcessName() << "\n";
   }
   // starts SchedulerWorker which essentially the loop
 }
@@ -76,12 +82,22 @@ String FCFSScheduler::returnProcessInfo() const
   str_stream << "CPU Utilization: ";
   running_stream << BORDER_H << "\n";
   running_stream << "Running Processes: \n";
+
   for (auto& cpu : cpu_workers) {
     if (cpu.getCurrentProcess() != nullptr && (cpu.getCurrentProcess()->getCurrState() == Process::RUNNING)) {
-      cpu_utilized_ctr = cpu_utilized_ctr + 1;
-      running_stream << cpu.getCurrentProcess()->getProcessName() << "\t" << "(" << cpu.getCurrentProcess()->getTimeStartedToStr() << ")" << "\t" << "Core: " << cpu.getCurrentProcess()->getCpuID() << "\t" << cpu.getCurrentProcess()->getTotalInstruction() - cpu.getCurrentProcess()->getRemainingInstructions() << " / " << cpu.getCurrentProcess()->getTotalInstruction() << "\n";
+      cpu_utilized_ctr += 1;
+
+      running_stream << std::left << std::setfill(' ')
+        << std::setw(15) << cpu.getCurrentProcess()->getProcessName()
+        << std::setw(30) << ("(" + cpu.getCurrentProcess()->getTimeStartedToStr() + ")")
+        << std::setw(15) << ("Core: " + std::to_string(cpu.getCurrentProcess()->getCpuID()))
+        << std::setw(15) << (std::to_string(cpu.getCurrentProcess()->getTotalInstruction() - cpu.getCurrentProcess()->getRemainingInstructions()) 
+            + " / " 
+            + std::to_string(cpu.getCurrentProcess()->getTotalInstruction()))
+        << std::endl;  // Move to the next line
     }
   }
+
   str_stream << (cpu_utilized_ctr * 100 / cpu_workers.size())  << "%" << "\n";
   str_stream << "Cores used: " << cpu_utilized_ctr << "\n";
   str_stream << "Cores available: " << cpu_workers.size() - cpu_utilized_ctr << "\n";
@@ -89,18 +105,42 @@ String FCFSScheduler::returnProcessInfo() const
 
   str_stream << "Finished Processes: \n";
   for (auto& curr_process : finished_processes) {
-    str_stream << curr_process->getProcessName() << "\t" << "(" << curr_process->getTimeEndToStr() << ")" << "\t" << "Core: " << curr_process->getCpuID() << "\t" << "Finished" << "\n";
+    str_stream << std::left << std::setfill(' ') 
+      << std::setw(15) << curr_process->getProcessName()  // Process name column
+      << std::setw(30) << ("(" + curr_process->getTimeEndToStr() + ")")  // Time ended column
+      << std::setw(15) << ("Core: " + std::to_string(curr_process->getCpuID()))  // Core column
+      << std::setw(15) << "Finished" << std::endl;  // Print and go to the next line
   }
-  str_stream << BORDER_H << "\n";
 
+str_stream << BORDER_H << "\n";  // Add the horizontal border at the end
   return str_stream.str();
 }
+
+void FCFSScheduler::startSchedTest()
+{
+  this->sched_test = true;
+  GlobalScheduler::getInstance()->getSchedWorker().update(true);
+  GlobalScheduler::getInstance()->getSchedWorker().start();
+}
+
+void FCFSScheduler::stopSchedTest()
+{
+  this->sched_test = false;
+}
+ 
 
 void FCFSScheduler::execute()
 {
   
+  if (sched_test) {
+    if (GlobalScheduler::getInstance()->getCpuCycle() % this->batch_process_freq)
+    {
+      GlobalScheduler::getInstance()->addProcess(GlobalScheduler::getInstance()->createUniqueProcess());
+    }
+    GlobalScheduler::getInstance()->incrementCycle();
+  }
   // stops SchedulerWorker while loop
-  if((finished_processes.size() == processes.size()) && ready_queue.empty())
+  if((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
   {
     // std::cout << "Stopping SchedulerWorker\n";
     GlobalScheduler::getInstance()->getSchedWorker().update(false);
@@ -124,7 +164,7 @@ void FCFSScheduler::execute()
     }
     cpu.start();
   }
-
+  IETThread::sleep(1);
   IETThread::sleep(delay_per_exec); // delay per execution
 }
 
@@ -133,6 +173,4 @@ void FCFSScheduler::run()
 {
   GlobalScheduler::getInstance()->getSchedWorker().update(true);
   GlobalScheduler::getInstance()->getSchedWorker().start();
-  // this->sched_worker().update(true);
-  // this->sched_worker().start();
 }

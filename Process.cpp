@@ -143,9 +143,9 @@ void Process::deleteFile()
     String filePath = this->name + ".txt";
     // std::filesystem::path path(filePath);
     int status = std::remove(filePath.c_str());
-    if (status != 0) {
-      std::cerr << "Error deleting file";
-    }
+    // if (status != 0) {
+    //   std::cerr << "Error deleting file";
+    // }
 }
 
 void Process::executeCurrCommand() const

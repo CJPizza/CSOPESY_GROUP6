@@ -49,7 +49,7 @@ void CPUWorker::run()
       return;
     }
     process->executeInstruction();
-    IETThread::sleep(1);
+    // IETThread::sleep(1);
   }
   // std::cout << "executing...";
 }
