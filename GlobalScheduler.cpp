@@ -40,6 +40,11 @@ void GlobalScheduler::destroy()
 
 std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
 {
+  // creates UniqueProcesses with properties based on config.txt
+  /*
+   * TODO?: if you want we can add checking for min_ins & max_ins when 
+   * min_ins > max_ins that produces a garbage value for num_ins
+   */
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> distrib(min_ins, max_ins);
@@ -61,7 +66,7 @@ void GlobalScheduler::logToFile() const
   std::remove(file_path.c_str());
   std::ofstream log_file(file_path);
 
-  // write process info from scheduler
+  // write process info from scheduler class
   log_file << scheduler->returnProcessInfo();
 }
 /*
@@ -69,11 +74,8 @@ void GlobalScheduler::logToFile() const
  */
 void GlobalScheduler::generateProcesses()
 {
-  /*
-   * Testing purposes
-   */
   int num_ins = 1000;
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < 100; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
   }

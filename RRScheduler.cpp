@@ -27,11 +27,12 @@ void RRScheduler::init()
   }
   // initially move first num_cpu processes in ready queue to cpu_worker threads
   for (auto& cpu_worker : cpu_workers) {
-    // assign to process workers then remove in the queue
+    // assign to process workers then remove in ready queue
     if(!this->ready_queue.empty())
     {
       cpu_worker.assignProcess(ready_queue.front());
       ready_queue.erase(ready_queue.begin());
+      // set CPUWorker executing status to true
       cpu_worker.setExecuting(true);
     }
     // else {

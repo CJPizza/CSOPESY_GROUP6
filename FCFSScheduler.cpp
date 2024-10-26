@@ -7,6 +7,7 @@
 #include <ios>
 #include <iostream>
 #include <memory>
+#include <ostream>
 #include <sstream>
 #include <string>
 
@@ -75,9 +76,9 @@ String FCFSScheduler::returnProcessInfo() const
   std::stringstream str_stream, running_stream;
   int cpu_utilized_ctr = 0;
   // Debugging purposes
-  // str_stream << "Processes Size: " << processes.size() << "\n";
-  // str_stream << "finished_processes size: " << finished_processes.size() << "\n";
-  // str_stream << "ready_queue size: " << ready_queue.size() << "\n";
+  str_stream << "Processes Size: " << processes.size() << "\n";
+  str_stream << "finished_processes size: " << finished_processes.size() << "\n";
+  str_stream << "ready_queue size: " << ready_queue.size() << "\n";
   str_stream << "CPU Utilization: ";
   running_stream << BORDER_H << "\n";
   running_stream << "Running Processes: \n";
@@ -132,7 +133,7 @@ void FCFSScheduler::execute()
 {
   
   if (sched_test) {
-    if (GlobalScheduler::getInstance()->getCpuCycle() % this->batch_process_freq)
+    if (GlobalScheduler::getInstance()->getCpuCycle() % this->batch_process_freq == 0)
     {
       GlobalScheduler::getInstance()->addProcess(GlobalScheduler::getInstance()->createUniqueProcess());
     }
@@ -141,8 +142,8 @@ void FCFSScheduler::execute()
   // stops SchedulerWorker while loop
   if((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
   {
-    // std::cout << "Stopping SchedulerWorker\n";
     GlobalScheduler::getInstance()->getSchedWorker().update(false);
+    return;
   }
 
   for (auto& cpu : cpu_workers) {
@@ -165,7 +166,7 @@ void FCFSScheduler::execute()
         // justs skips idle workers therefore not starting them
         else if (!cpu.getExecuting() && ready_queue.empty())
         {
-          break;
+          continue;
         }
       }
     }

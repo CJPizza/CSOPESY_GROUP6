@@ -62,28 +62,16 @@ class GlobalScheduler {
         int min_ins; // minimum instruction per process
         int max_ins; // maximum instruction per process
         int delay_per_exec; // delay in ms per execution
-        uint32_t cpu_cycle = 0;
-        SchedulerWorker sched_worker;
-
+        uint32_t cpu_cycle = 0; // mainly used for scheduler-test all processing operations do not depend
+                                // on the cpu cycle they depend on their number of instructions
+        SchedulerWorker sched_worker; // manages the ticking of the cpu cycle resulting in a synchronized
+                                      // incrementation of instruction line
         /* 
          * Prefix for string name generation for processes
          * when generating processes
          */
         String process_prefix = "Process_";
         int process_counter; // postfix for processes
-
-        /*
-         * config.txt values will be saved here; in a hashtable format
-         * ex. config["num_cpu"] would access saved config to num_cpu.
-         * keys for config:
-         * num-cpu 
-         * scheduler 
-         * quantum_cycles
-         * batch-process-freq 
-         * min-ins
-         * max-ins
-         * delay-per-exec
-         */
 
         /*
          * scheduler in `config` would be mapped accordingly

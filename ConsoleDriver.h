@@ -39,10 +39,6 @@ class ConsoleDriver {
         bool isRunning() const;
 
         HANDLE getConsoleHandle() const;
-
-        // DEBUG PURPOSES
-        // void printTest() const;
-        
     private:
         ConsoleDriver();
         ~ConsoleDriver() = default;
