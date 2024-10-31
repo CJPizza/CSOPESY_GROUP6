@@ -53,18 +53,11 @@ void Process::executeInstruction()
 {
     // std::cout << "Core: " << this->cpuCoreID << std::endl;
     std::fstream file(this->getProcessName()+".txt", std::ios::in | std::ios::out | std::ios::app); 
-    if (!file)
-    {
-        std::cerr << "Error opening file." << std::endl;
-    }
     if (this->rem_ins > 0)
     {
-        this->rem_ins = this->rem_ins - 1;
+        this->rem_ins -=  1;
         // writes to file
         file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
-    }
-    else {
-        // std::cout << "Process " << this->uid << "; " << this->processName << " has already finished.\n";
     }
     file.close();
 }
@@ -85,6 +78,11 @@ void Process::setFinished()
   tm curr_time = *localtime(&time_dump);
   this->time_finished = curr_time;
   this->curr_state = FINISHED;
+}
+
+void Process::setStateReady()
+{
+  this->curr_state = READY;
 }
 
 void Process::setRunning()

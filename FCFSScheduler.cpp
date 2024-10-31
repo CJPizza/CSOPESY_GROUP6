@@ -13,8 +13,6 @@
 
 void FCFSScheduler::init()
 {
-  // std::cout << "FCFSScheduler init is called\n";
-  // std::cout << "num_cpu: " << this->num_cpu;
   // first put a process into a thread so that they execute at the same time??
   // create logical cpus or cpu worker
   this->delay_per_exec = GlobalScheduler::getInstance()->getDelayPerExec();
@@ -25,21 +23,6 @@ void FCFSScheduler::init()
     cpu_workers.emplace_back(CPUWorker());
     // std::cout << "Core: " <<  cpu_worker.uid << ": is working" << "\n";
   }
-  // initially move first num_cpu processes in ready queue to cpu_worker threads
-  for (auto& cpu_worker : cpu_workers) {
-    // assign to process workers then remove in the queue
-    if(!this->ready_queue.empty())
-    {
-      cpu_worker.assignProcess(ready_queue.front());
-      ready_queue.erase(ready_queue.begin());
-      cpu_worker.setExecuting(true);
-    }
-    // else {
-    // std::cout << "ready_queue is empty\n";
-    // }
-    // std::cout << "Core: " << cpu_worker.getCoreID() << " is being assigned Process: " << ready_queue.front()->getProcessName() << "\n";
-  }
-  // starts SchedulerWorker which essentially the loop
 }
 
 FCFSScheduler::FCFSScheduler(int num_cpu) : AScheduler(FCFS) 
@@ -132,16 +115,11 @@ void FCFSScheduler::stopSchedTest()
 void FCFSScheduler::execute()
 {
   
-  if (sched_test) {
-    if (GlobalScheduler::getInstance()->getCpuCycle() % this->batch_process_freq == 0)
-    {
-      GlobalScheduler::getInstance()->addProcess(GlobalScheduler::getInstance()->createUniqueProcess());
-    }
-    GlobalScheduler::getInstance()->incrementCycle();
-  }
+  // condition if scheduler-test is initiated by the user thus adding it to our sort of cpu cycle/tick
   // stops SchedulerWorker while loop
-  if((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
+  if ((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
   {
+    // std::cout << "Stopping SchedulerWorker" << std::endl;
     GlobalScheduler::getInstance()->getSchedWorker().update(false);
     return;
   }
@@ -149,31 +127,25 @@ void FCFSScheduler::execute()
   for (auto& cpu : cpu_workers) {
     {
       if (cpu.getCurrentProcess() != nullptr) {
-        if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED) && !cpu.getExecuting()) {
+        if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED)) {
           finished_processes.push_back(cpu.getCurrentProcess());
           cpu.clearProcess();
+          // cpu.setExecuting(false);
         }
       }
-      else {
-        if (!cpu.getExecuting() && !ready_queue.empty())
-        {
-          // Assigning of ready_queue to CPUWorkers
-          cpu.assignProcess(ready_queue.front());
-          ready_queue.erase(ready_queue.begin());
-          cpu.setExecuting(true);
+      if (cpu.getCurrentProcess() == nullptr) {
+        if (!ready_queue.empty()) {
+        // Assigning of ready_queue to CPUWorkers
+        cpu.assignProcess(ready_queue.front());
+        ready_queue.erase(ready_queue.begin());
         }
-        // decreases the execution time overhead when looping through all the CPUWorkers
-        // justs skips idle workers therefore not starting them
-        else if (!cpu.getExecuting() && ready_queue.empty())
-        {
+        if (ready_queue.empty()) {
           continue;
         }
       }
     }
     cpu.start();
   }
-  // if you want a more in sync process line execution increment add a 1ms sleep
-  // IETThread::sleep(1);
   IETThread::sleep(delay_per_exec); // delay per execution
 }
 

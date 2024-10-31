@@ -3,7 +3,8 @@
 
 CPUWorker::CPUWorker() : uid(new_id++) {}
 
-  // mtx might not be needed and passing finished_processes
+// assings process to this CPUWorker then sets the process state 
+// to running
 void CPUWorker::assignProcess(std::shared_ptr<Process> process) 
 {
   this->process = process;
@@ -36,20 +37,43 @@ void CPUWorker::clearProcess()
   this->process = nullptr;
 }
 
+void CPUWorker::setQuantumDec(int quant_rem)
+{
+  this->quant_cycle_rem = quant_rem;
+}
+
+int CPUWorker::getQuantumDec() const
+{
+  return this->quant_cycle_rem;
+}
+
+void CPUWorker::setRR()
+{
+  this->isRR = true;
+}
+
 void CPUWorker::run()
 {
-  if (executing && process != nullptr) {
+  if (process != nullptr) {
     if (this->process->hasFinished())
     {
       // TESTING Purposes
       // std::cout << "Process: " << process->getProcessName() << " has finished\n";
       this->process->setFinished();
-      // this->finished_processes.push_back(this->process);
-      this->executing = false;
-      return;
+      // this->executing = false;
     }
-    process->executeInstruction();
-    // IETThread::sleep(1);
+    else {
+      if (!isRR)
+      {
+        process->executeInstruction();
+      }
+      else if (isRR && quant_cycle_rem > 0) {
+        // std::cout << "Decrementing Quant: " << quant_cycle_rem << "\n";
+        quant_cycle_rem--;
+        process->executeInstruction();
+      }
+    }
   }
+  // IETThread::sleep(1);
   // std::cout << "executing...";
 }

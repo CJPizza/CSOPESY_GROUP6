@@ -49,6 +49,7 @@ public:
 
     void setFinished();
     void setRunning();
+    void setStateReady();
     ProcessState getCurrState();
 
 private:
