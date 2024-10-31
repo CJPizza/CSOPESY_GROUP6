@@ -11,6 +11,7 @@
 #include "ConsoleDriver.h"
 #include "FCFSScheduler.h"
 #include "Process.h"
+#include "RRScheduler.h"
 
 GlobalScheduler* GlobalScheduler::sharedInstance = nullptr;
 
@@ -74,8 +75,9 @@ void GlobalScheduler::logToFile() const
  */
 void GlobalScheduler::generateProcesses()
 {
+  int num_processes = 32;
   int num_ins = 1000;
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < num_processes; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
   }
@@ -89,6 +91,11 @@ uint32_t GlobalScheduler::getCpuCycle() const
 void GlobalScheduler::incrementCycle()
 {
   this->cpu_cycle++;
+}
+
+int GlobalScheduler::getQuantumCycle() const 
+{
+  return quantum_cycles;
 }
 
 void GlobalScheduler::addProcess(std::shared_ptr<Process> new_process)
@@ -117,11 +124,13 @@ int GlobalScheduler::getBatchFreq() const
 void GlobalScheduler::startSchedTest()
 {
   this->scheduler->startSchedTest();
+  this->sched_test = true;
 }
 
 void GlobalScheduler::stopSchedTest()
 {
   this->scheduler->stopSchedTest();
+  this->sched_test = false;
 }
 
 void GlobalScheduler::loadConfig()
@@ -130,8 +139,8 @@ void GlobalScheduler::loadConfig()
 
   config_kvs map_scheduler = {
     // maps string to corresponding int as representation when parsing config.txt
-    {"fcfs", 0},
-    {"rr", 1},
+    {"\"fcfs\"", 0},
+    {"\"rr\"", 1},
   };
 
   // https://stackoverflow.com/questions/6892754/creating-a-simple-configuration-file-and-parser-in-c
@@ -155,6 +164,7 @@ void GlobalScheduler::loadConfig()
       std::string value;
       if( std::getline(is_line, value) ) {
         if (key == "scheduler") {
+          // std::cout << "scheduler: " << map_scheduler[value] << std::endl;
           configs[key] = map_scheduler[value];
         } else {
           configs[key] = std::stoi(value);
@@ -175,8 +185,10 @@ void GlobalScheduler::loadConfig()
   if(configs["scheduler"] == 0)
   {
     this->scheduler = new FCFSScheduler(num_cpu);
-  } else {
+  } else if(configs["scheduler"] == 1) {
     // if scheduler is ROUND_ROBIN add here
+    // std::cout << "RR is selected" << std::endl;
+    this->scheduler = new RRScheduler(num_cpu);
   }
   // std::cout << "Config:\n";
   // for (const std::pair<const String, int> & n : configs){
@@ -184,9 +196,10 @@ void GlobalScheduler::loadConfig()
   // }
 
   // If you want to check what the contents of config are
-  // for (const std::pair<const String, int>& n : config){
+  // for (const std::pair<const String, int>& n : configs){
   //     std::cout << n.first << ": " << n.second << "\n";
   // }
+
 
   is_file.close();
 }
@@ -194,7 +207,14 @@ void GlobalScheduler::loadConfig()
 void GlobalScheduler::tick()
 {
   // std::cout << "Tick is called";
+  // might move scheduler-test related stuff in here
   this->scheduler->execute();
+  if (this->sched_test) {
+    if (this->cpu_cycle % batch_process_freq == 0) {
+      addProcess(createUniqueProcess());
+    }
+    incrementCycle();
+  }
 }
 
 String GlobalScheduler::strProcessesInfo() const
@@ -212,4 +232,3 @@ void GlobalScheduler::startScheduler() const
   this->scheduler->init();
   this->scheduler->start();
 }
-

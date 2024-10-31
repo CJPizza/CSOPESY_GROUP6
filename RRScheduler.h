@@ -27,6 +27,8 @@ public:
   void startSchedTest() override;
   void stopSchedTest() override;
 
+  // void resetQuantumCycle();
+
 private:
   int num_cpu;
   std::vector<CPUWorker> cpu_workers;
@@ -34,6 +36,8 @@ private:
   bool sched_test = false;
   int delay_per_exec = 0;
   int batch_process_freq = 0;
+  int quantum_cycle = 0;
+  // int quant_cycle_rem = 0; // remaining line execution before changing to another set of processes
 
   std::unordered_map<String, std::shared_ptr<Process>> processes;
   std::vector<std::shared_ptr<Process>> ready_queue;

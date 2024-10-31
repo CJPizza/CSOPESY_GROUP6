@@ -39,6 +39,7 @@ class GlobalScheduler {
         int getBatchFreq() const;
         uint32_t getCpuCycle() const;
         void incrementCycle();
+        int getQuantumCycle() const;
 
         void startSchedTest();
         void stopSchedTest();
@@ -72,10 +73,10 @@ class GlobalScheduler {
          */
         String process_prefix = "Process_";
         int process_counter; // postfix for processes
-
         /*
          * scheduler in `config` would be mapped accordingly
          * FCFS == 0
          * RR   == 1
          */
+        bool sched_test = false;
 };

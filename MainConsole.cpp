@@ -67,12 +67,13 @@ void MainConsole::process()
       std::cout << "Already initialized";
       command_hist.append("\nAlready initialized");
     }
-    GlobalScheduler::getInstance()->loadConfig();
-    // If you want to test generating some processes during initialization
-    // GlobalScheduler::getInstance()->generateProcesses();
-    GlobalScheduler::getInstance()->startScheduler();
-    this->initialized = true;
-    // DEBUG Purposes:
+    else {
+      GlobalScheduler::getInstance()->loadConfig();
+      // If you want to test generating some processes during initialization
+      GlobalScheduler::getInstance()->generateProcesses();
+      GlobalScheduler::getInstance()->startScheduler();
+      this->initialized = true;
+    }
     return;
   }
   if (initialized) {
