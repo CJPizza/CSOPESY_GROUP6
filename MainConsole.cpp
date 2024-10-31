@@ -73,8 +73,10 @@ void MainConsole::process()
       // GlobalScheduler::getInstance()->generateProcesses();
       GlobalScheduler::getInstance()->startScheduler();
       this->initialized = true;
-      return;
     }
+    return;
+  }
+  if (initialized && command != "exit") {
     if (command == "screen")
     {
       if (param == "-s") {
@@ -153,7 +155,6 @@ void MainConsole::process()
     }
     else if (command == "marquee")
     {
-
       ConsoleDriver::getInstance()->switchConsole(MARQUEE_CONSOLE);
     }
     else {
@@ -162,20 +163,17 @@ void MainConsole::process()
       // std::cerr << "Enter a command: ";
     }
   }
-  if (command == "exit")
+  else if (command == "exit")
   {
     std::cerr << "exit command recognized. Exiting application.\n";
+    exiting = true;
     ConsoleDriver::getInstance()->exitApplication();
     return;
   }
   else
   {
-    if(!initialized)
-    {
-      std::cerr << "Unknown command: " << param;
-      this->command_hist.append("Unknown command: " + param);
-    }
-
+    std::cerr << "Unknown command: " << param;
+    this->command_hist.append("Unknown command: " + param);
     // std::cerr << "Unknown command.\n";
     // this->command_hist.append("\nUnknown command.\n");
     // std::cerr << "Enter a command: ";
@@ -187,8 +185,11 @@ void MainConsole::process()
 
 void MainConsole::display()
 {
-  std::cerr << "\nEnter a command: ";
-  this->command_hist.append("\nEnter a command: ");
+  if (!exiting)
+  {
+    std::cerr << "\nEnter a command: ";
+    this->command_hist.append("\nEnter a command: ");
+  }
 }
 
 void MainConsole::printHeader() const

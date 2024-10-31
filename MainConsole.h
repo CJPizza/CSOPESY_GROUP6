@@ -4,7 +4,7 @@
 
 class MainConsole : public AConsole 
 {
-public:
+  public:
     MainConsole();
     ~MainConsole() = default;
     void onEnabled() override;
@@ -14,6 +14,7 @@ public:
     void printHeader() const;
     void lsUI() const;
     std::vector<Process> processes;
-private:
+  private:
     bool initialized = false; // checks if initialized command was called 
+    bool exiting = false;
 };
