@@ -73,10 +73,8 @@ void MainConsole::process()
       // GlobalScheduler::getInstance()->generateProcesses();
       GlobalScheduler::getInstance()->startScheduler();
       this->initialized = true;
+      return;
     }
-    return;
-  }
-  if (initialized) {
     if (command == "screen")
     {
       if (param == "-s") {
