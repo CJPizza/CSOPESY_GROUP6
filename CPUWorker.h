@@ -20,10 +20,12 @@ public:
   std::shared_ptr<Process> getCurrentProcess() const;
 
   bool getExecuting() const;
+  bool quantumCycleDone();
   void setExecuting(bool executing);
 
+
   void clearProcess();
-  void setQuantumDec(int quant_rem);
+  void setQuantumDec();
   int getQuantumDec() const;
   void setRR();
 

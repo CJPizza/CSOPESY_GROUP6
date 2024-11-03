@@ -2,6 +2,7 @@
 #include <ios>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -28,6 +29,7 @@ void RRScheduler::init()
     // std::cout << "loop is executing\n";
     cpu_workers.emplace_back(CPUWorker());
     cpu_workers[i].setRR();
+    cpu_workers[i].setQuantumDec();
   }
   // initially move first num_cpu processes in ready queue to cpu_worker threads
   // for (auto& cpu_worker : cpu_workers) {
@@ -50,7 +52,7 @@ void RRScheduler::init()
   //   std::cout << "Core: " << cpu_worker.getCoreID() << " is being assigned Process: " << ready_queue.front()->getProcessName() << "\n";
   // }
   // starts SchedulerWorker which essentially the loop
-  IETThread::sleep(1);
+  is_running = true;
 }
 
 RRScheduler::RRScheduler(int num_cpu) : AScheduler(ROUND_ROBIN) 
@@ -82,7 +84,7 @@ std::unordered_map<String, std::shared_ptr<Process>>& RRScheduler::getProcesses(
   return processes;
 }
 
-String RRScheduler::returnProcessInfo() const
+String RRScheduler::returnProcessInfo()
 {
   std::stringstream str_stream, running_stream;
   int cpu_utilized_ctr = 0;
@@ -136,6 +138,7 @@ void RRScheduler::startSchedTest()
   GlobalScheduler::getInstance()->getSchedWorker().start();
 }
 
+
 void RRScheduler::stopSchedTest()
 {
   this->sched_test = false;
@@ -144,55 +147,68 @@ void RRScheduler::stopSchedTest()
 // every tick of SchedulerWorker this is called
 void RRScheduler::execute()
 {
-  if ((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
-  {
-    GlobalScheduler::getInstance()->getSchedWorker().update(false);
+  if (!is_running) {
+    this->start();
   }
-
-  for (auto& cpu : cpu_workers) {
-    // DEBUGGING PURPOSES:
-    // std::cout << "ready_queue: \n";
-    // for (auto& curr_process : ready_queue) {
-    //   std::cout << curr_process->getProcessName() << " ";
-    // }
-    // std::cout << std::endl;
-
-    // first if condition checks if a cpu worker already has an attached process then checks
-    // if it is finished executing the process then cleares the cpu's attached process
-    if (cpu.getCurrentProcess() != nullptr) {
-      if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED)) {
-        finished_processes.push_back(cpu.getCurrentProcess());
-        cpu.clearProcess();
-      } else {
-        if (cpu.getQuantumDec() == 0) {
-          cpu.getCurrentProcess()->setStateReady();
-          ready_queue.push_back(cpu.getCurrentProcess());
-          cpu.clearProcess();
-        }
-      }
-    }
-    // if statement is better than else since first if statement just frees up the CPU_Worker 
-    // this if statement allocates process to free CPU_Worker resulting in every CPU_Worker to have
-    // an attached process at all times if ready_queue is not empty.
-    if (cpu.getCurrentProcess() == nullptr) {
-      if (!ready_queue.empty()) {
-        // Assigning of ready_queue to CPUWorkers
-        cpu.assignProcess(ready_queue.front());
-        cpu.setQuantumDec(this->quantum_cycle);
-        ready_queue.erase(ready_queue.begin());
-      }
-      else {
-        continue;
-      }
-    }
-    cpu.start(); 
-  }
-  IETThread::sleep(delay_per_exec); // delay per execution
 }
 
 
 void RRScheduler::run()
 {
-  GlobalScheduler::getInstance()->getSchedWorker().update(true);
-  GlobalScheduler::getInstance()->getSchedWorker().start();
+  while (is_running)
+  {
+    std::scoped_lock<std::mutex> lock(mtx);
+    if ((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
+    {
+      GlobalScheduler::getInstance()->getSchedWorker().update(false);
+    }
+
+    for (auto& curr_cpu : cpu_workers) {
+      // DEBUGGING PURPOSES:
+      // std::cout << "ready_queue: \n";
+      // for (auto& curr_process : ready_queue) {
+      //   std::cout << curr_process->getProcessName() << " ";
+      // }
+      // std::cout << std::endl;
+      // std::cout << "Core: " << curr_cpu.getCoreID() << " is running" << std::endl;
+      // first if condition checks if a cpu worker already has an attached process then checks
+      // if it is finished executing the process then cleares the cpu's attached process
+      if (curr_cpu.getCurrentProcess() != nullptr) {
+        if ((curr_cpu.getCurrentProcess()->getCurrState() == Process::FINISHED)) {
+          // std::cout << curr_cpu.getCurrentProcess()->getProcessName() << "is done \n";
+          finished_processes.push_back(curr_cpu.getCurrentProcess());
+          curr_cpu.clearProcess();
+        } else {
+          if (curr_cpu.quantumCycleDone()) {
+            curr_cpu.getCurrentProcess()->setStateReady();
+            ready_queue.push_back(curr_cpu.getCurrentProcess());
+            curr_cpu.clearProcess();
+          }
+        }
+      }
+      // if statement is better than else since first if statement just frees up the CPU_Worker 
+      // this if statement allocates process to free CPU_Worker resulting in every CPU_Worker to have
+      // an attached process at all times if ready_queue is not empty.
+      if (curr_cpu.getCurrentProcess() == nullptr) {
+        if (!ready_queue.empty()) {
+          // Assigning of ready_queue to CPU_Worker
+          curr_cpu.setQuantumDec();
+          curr_cpu.assignProcess(ready_queue.front());
+          // std::cout << curr_cpu.getCurrentProcess()->getProcessName() << " process is assigned scheduler\n";
+          ready_queue.erase(ready_queue.begin());
+        }
+        else {
+          continue;
+        }
+      }
+
+      if (curr_cpu.getCurrentProcess() != nullptr) {
+        curr_cpu.start(); 
+      }
+    }
+
+    // IETThread::sleep(1); 
+    IETThread::sleep(delay_per_exec); // delay per execution
+  }
+
 }

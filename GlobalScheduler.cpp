@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -17,26 +18,26 @@ GlobalScheduler* GlobalScheduler::sharedInstance = nullptr;
 
 GlobalScheduler* GlobalScheduler::getInstance() 
 {
-    if (sharedInstance == nullptr) 
-    {
-        sharedInstance = new GlobalScheduler();
-    }
-    return sharedInstance;
+  if (sharedInstance == nullptr) 
+  {
+    sharedInstance = new GlobalScheduler();
+  }
+  return sharedInstance;
 }
 
 void GlobalScheduler::initialize()
 {
-    if (sharedInstance == nullptr) {
-        sharedInstance = new GlobalScheduler();
+  if (sharedInstance == nullptr) {
+    sharedInstance = new GlobalScheduler();
 
-    } else {
-        std::cerr << "GlobalScheduler already initialized." << std::endl;
-    }
+  } else {
+    std::cerr << "GlobalScheduler already initialized." << std::endl;
+  }
 }
 
 void GlobalScheduler::destroy()
 {
-    delete sharedInstance;
+  delete sharedInstance;
 }
 
 std::shared_ptr<Process> GlobalScheduler::createUniqueProcess()
@@ -75,11 +76,24 @@ void GlobalScheduler::logToFile() const
  */
 void GlobalScheduler::generateProcesses()
 {
-  int num_processes = 32;
+  int num_processes = 100;
   int num_ins = 1000;
   for (int i = 0; i < num_processes; i++) {
     std::shared_ptr<Process> new_process = std::make_shared<Process>(process_prefix + std::to_string(i), num_ins);
     addProcess(new_process);
+  }
+}
+
+void GlobalScheduler::printAllProcesses() const
+{
+  for (auto& curr_process : scheduler->getProcesses()) {
+    std::cout << std::setw(15) << curr_process.second->getProcessName()
+      << std::setw(30) << ("(" + curr_process.second->getTimeStartedToStr() + ")")
+      << std::setw(15) << ("Core: " + std::to_string(curr_process.second->getCpuID()))
+      << std::setw(15) << (std::to_string(curr_process.second->getTotalInstruction() - curr_process.second->getRemainingInstructions()) 
+          + " / " 
+          + std::to_string(curr_process.second->getTotalInstruction()))
+      << std::endl;  
   }
 }
 
@@ -123,8 +137,8 @@ int GlobalScheduler::getBatchFreq() const
 
 void GlobalScheduler::startSchedTest()
 {
-  this->scheduler->startSchedTest();
   this->sched_test = true;
+  this->scheduler->startSchedTest();
 }
 
 void GlobalScheduler::stopSchedTest()
@@ -229,6 +243,8 @@ SchedulerWorker& GlobalScheduler::getSchedWorker()
 
 void GlobalScheduler::startScheduler() const
 {
-  this->scheduler->init();
-  this->scheduler->start();
+  scheduler->init();
+  GlobalScheduler::getInstance()->getSchedWorker().update(true);
+  GlobalScheduler::getInstance()->getSchedWorker().start();
+  scheduler->start();
 }

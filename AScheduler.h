@@ -25,7 +25,7 @@ public:
   virtual void addProcess(std::shared_ptr<Process> process) = 0;
   virtual std::shared_ptr<Process> findProcess(String process_name) = 0;
   virtual std::unordered_map<String, std::shared_ptr<Process>>& getProcesses() = 0;
-  virtual String returnProcessInfo() const = 0; // returns process info
+  virtual String returnProcessInfo() = 0; // returns process info
   virtual void startSchedTest() = 0; // starts scheduler-test
   virtual void stopSchedTest() = 0;
   void run() override;

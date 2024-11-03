@@ -70,7 +70,7 @@ void MainConsole::process()
     else {
       GlobalScheduler::getInstance()->loadConfig();
       // If you want to test generating some processes during initialization
-      // GlobalScheduler::getInstance()->generateProcesses();
+      GlobalScheduler::getInstance()->generateProcesses();
       GlobalScheduler::getInstance()->startScheduler();
       this->initialized = true;
     }
@@ -97,6 +97,11 @@ void MainConsole::process()
           ConsoleDriver::getInstance()->registerScreen(newScreen);
           ConsoleDriver::getInstance()->switchToScreen(newProcess->getProcessName());
         }
+      }
+      // Debugging: Shows all processes
+      else if (param == "--all")
+      {
+        GlobalScheduler::getInstance()->printAllProcesses();
       }
       else if (param == "-r") {
         // std::cerr << "screen -r command\n";

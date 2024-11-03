@@ -45,6 +45,7 @@ class GlobalScheduler {
         void stopSchedTest();
 
         void logToFile() const;
+        void printAllProcesses() const;
     private:
         GlobalScheduler() = default;
         ~GlobalScheduler() = default;

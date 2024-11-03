@@ -3,10 +3,12 @@
 #include "GlobalScheduler.h"
 #include "Process.h"
 #include "SchedulerWorker.h"
+
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -17,6 +19,7 @@ void FCFSScheduler::init()
   // create logical cpus or cpu worker
   this->delay_per_exec = GlobalScheduler::getInstance()->getDelayPerExec();
   this->batch_process_freq = GlobalScheduler::getInstance()->getBatchFreq();
+  this->is_running = true;
 
   for (int i = 0; i < num_cpu; i++) {
     // std::cout << "loop is executing\n";
@@ -54,8 +57,9 @@ std::unordered_map<String, std::shared_ptr<Process>>& FCFSScheduler::getProcesse
   return processes;
 }
 
-String FCFSScheduler::returnProcessInfo() const
+String FCFSScheduler::returnProcessInfo() 
 {
+  std::scoped_lock lock(mtx);
   std::stringstream str_stream, running_stream;
   int cpu_utilized_ctr = 0;
   // Debugging purposes
@@ -95,7 +99,7 @@ String FCFSScheduler::returnProcessInfo() const
       << std::setw(15) << "Finished" << std::endl;  // Print and go to the next line
   }
 
-str_stream << BORDER_H << "\n";  // Add the horizontal border at the end
+  str_stream << BORDER_H << "\n";  // Add the horizontal border at the end
   return str_stream.str();
 }
 
@@ -110,48 +114,51 @@ void FCFSScheduler::stopSchedTest()
 {
   this->sched_test = false;
 }
- 
+
 
 void FCFSScheduler::execute()
 {
-  
-  // condition if scheduler-test is initiated by the user thus adding it to our sort of cpu cycle/tick
-  // stops SchedulerWorker while loop
-  if ((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
-  {
-    // std::cout << "Stopping SchedulerWorker" << std::endl;
-    GlobalScheduler::getInstance()->getSchedWorker().update(false);
-    return;
+  if (!is_running) {
+    this->start();
   }
-
-  for (auto& cpu : cpu_workers) {
-    {
-      if (cpu.getCurrentProcess() != nullptr) {
-        if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED)) {
-          finished_processes.push_back(cpu.getCurrentProcess());
-          cpu.clearProcess();
-          // cpu.setExecuting(false);
-        }
-      }
-      if (cpu.getCurrentProcess() == nullptr) {
-        if (!ready_queue.empty()) {
-        // Assigning of ready_queue to CPUWorkers
-        cpu.assignProcess(ready_queue.front());
-        ready_queue.erase(ready_queue.begin());
-        }
-        if (ready_queue.empty()) {
-          continue;
-        }
-      }
-    }
-    cpu.start();
-  }
-  IETThread::sleep(delay_per_exec); // delay per execution
 }
 
 
 void FCFSScheduler::run()
 {
-  GlobalScheduler::getInstance()->getSchedWorker().update(true);
-  GlobalScheduler::getInstance()->getSchedWorker().start();
+  while (is_running) {
+    if ((finished_processes.size() == processes.size()) && ready_queue.empty() && !sched_test)
+    {
+      // std::cout << "Stopping SchedulerWorker" << std::endl;
+      GlobalScheduler::getInstance()->getSchedWorker().update(false);
+      return;
+    }
+
+    for (auto& cpu : cpu_workers) {
+      // std::cout << "Current CPU: " << cpu.getCoreID() << std::endl;
+      if (cpu.getCurrentProcess() != nullptr) {
+        if ((cpu.getCurrentProcess()->getCurrState() == Process::FINISHED)) {
+          // std::cout << "Process is finished: " << cpu.getCoreID() << std::endl;
+          finished_processes.push_back(cpu.getCurrentProcess());
+          cpu.clearProcess();
+          // cpu.setExecuting(false);
+        }
+      }
+
+      if (cpu.getCurrentProcess() == nullptr) {
+        if (!ready_queue.empty()) {
+          // Assigning of ready_queue to CPUWorkers
+          cpu.assignProcess(ready_queue.front());
+          ready_queue.erase(ready_queue.begin());
+        }
+        if (ready_queue.empty()) {  
+          // std::cout << "Continue evoked" << std::endl;
+          continue;
+        }
+      }
+      cpu.start();
+    }
+  }
+
+  is_running = false;
 }

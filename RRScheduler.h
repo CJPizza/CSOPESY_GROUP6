@@ -22,7 +22,7 @@ public:
   void addProcess(std::shared_ptr<Process> process) override;
   std::shared_ptr<Process> findProcess(String process_name) override;
   std::unordered_map<String, std::shared_ptr<Process>>& getProcesses() override;
-  String returnProcessInfo() const override;
+  String returnProcessInfo() override;
 
   void startSchedTest() override;
   void stopSchedTest() override;
@@ -34,6 +34,7 @@ private:
   std::vector<CPUWorker> cpu_workers;
   
   bool sched_test = false;
+  bool is_running = false;
   int delay_per_exec = 0;
   int batch_process_freq = 0;
   int quantum_cycle = 0;
