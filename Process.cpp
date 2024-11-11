@@ -1,163 +1,142 @@
+#include <random>
 #include "Process.h"
-#include "IETThread.h"
-#include <cstdlib>
-#include <iostream>
-#include <ctime>
-#include <unistd.h>
-#include <fstream>
 
-/*
- * TODO: Implement ICommand and stuff, then finish executeCurrCommand executeInstruction
- * will be deprecated.
- */
-
-Process::Process(String name, int num_ins)
-    : uid(new_uid++)
+// Constructor implementation.
+Process::Process(int process_id, const std::string &process_name, const std::string &creation_time, 
+    int core_id, int min_instructions, int max_instructions, size_t memory_required)
+  : process_id(process_id), process_name(process_name), creation_time(creation_time), 
+  core_id(core_id), process_state(READY), requirement_flags{true, memory_required}
 {
-    this->name = name;
-    this->total_ins = num_ins;
-    this->rem_ins = num_ins;
-    time_t time_dump = time(NULL);
-    tm curr_time = *localtime(&time_dump);
-    this->time_created = curr_time;
-    this->createFile();
-    this->curr_state = READY;
+  std::string file_path = process_name + ".txt";
+  std::remove(file_path.c_str());
 }
 
-int Process::getUid() const
+// Executes the current command in the command list.
+void Process::executeCurrentCommand()
 {
-    return this->uid;
+  // Ensure there are still commands to execute.
+  if (command_counter < command_list.size())
+  {
+    // Set the core ID for the command and execute it.
+    command_list[command_counter]->setCore(core_id);
+    command_list[command_counter]->execute();
+
+    // Increment the command counter to move to the next command.
+    command_counter++;
+  }
 }
 
-String Process::getProcessName() const
+size_t Process::getMemReq() const
 {
-    return this->name;
+  return requirement_flags.memory_required;
 }
 
-int Process::getTotalInstruction() const
+// Returns the number of commands executed so far.
+int Process::getCommandCounter() const
 {
-    return this->total_ins;
+  return command_counter;
 }
 
-int Process::getRemainingInstructions() const 
+// Returns the total number of commands for this process.
+int Process::getLinesOfCode() const
 {
-    return this->rem_ins;
+  return command_list.size();
 }
 
-bool Process::hasFinished() const 
+// Returns the CPU core ID assigned to the process.
+int Process::getCPUCoreID() const
 {
-    return this->rem_ins == 0;
+  return core_id;
 }
 
-void Process::executeInstruction()
+// Sets a new CPU core ID for the process.
+void Process::setCPUCoreID(int core_id)
 {
-    // std::cout << "Core: " << this->cpuCoreID << std::endl;
-    std::fstream file(this->getProcessName()+".txt", std::ios::in | std::ios::out | std::ios::app); 
-    if (this->rem_ins > 0)
-    {
-        this->rem_ins -=  1;
-        // writes to file
-        file << this->getProcessName() << "\t" << "(" << this->getCurrTimeToStr() << ")" << "\t" << "Core: " << this->getCpuID() << " " << "Hello world from " << this->getProcessName() << "\n";
-    }
-    file.close();
+  this->core_id = core_id;  // Assign the new core ID.
 }
 
-void Process::setCpuID(int core_id)
+// Returns the current state of the process.
+Process::ProcessState Process::getState() const
 {
-    this->core_id = core_id;
+  return process_state;
 }
 
-int Process::getCpuID() const
+// Sets the process state to a new value.
+void Process::setState(ProcessState state)
 {
-    return this->core_id;
+  process_state = state;
 }
 
-void Process::setFinished()
+// Returns the unique process ID (PID).
+int Process::getPID() const
 {
-  time_t time_dump = time(0);
-  tm curr_time = *localtime(&time_dump);
-  this->time_finished = curr_time;
-  this->curr_state = FINISHED;
+  return process_id;
 }
 
-void Process::setStateReady()
+// Returns the name of the process.
+std::string Process::getName() const
 {
-  this->curr_state = READY;
+  return process_name;
 }
 
-void Process::setRunning()
+// Returns the creation time of the process.
+std::string Process::getTime() const
 {
-  time_t time_dump = time(0);
-  tm curr_time = *localtime(&time_dump);
-  this->time_executed = curr_time;
-  this->curr_state = RUNNING;
+  return creation_time;
 }
 
-String Process::getTimeStartToStr() const
+bool Process::isAllocated() const
 {
-    char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_created);
-    return String(buffer);
+  // if start_loc and end_loc are the same then process is not allocated
+  // since both vars are initialized at 0
+  return !(start_loc == end_loc);
 }
 
-String Process::getTimeStartedToStr() const
+// void Process::processSetInMem(bool in_mem)
+// {
+//   this->in_mem = in_mem;
+// }
+
+void Process::MemDealloc()
 {
-    char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_created);
-    return String(buffer);
+  start_loc = end_loc = 0;
 }
 
-String Process::getTimeEndToStr() const
+size_t Process::getStartLoc() const
 {
-    char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &this->time_finished);
-    return String(buffer);
+  return start_loc;
 }
 
-String Process::getCurrTimeToStr() const
+size_t Process::getEndLoc() const
 {
-    time_t time_dump = time(NULL);
-    // this->time_created = *localtime(&curr_time);
-    tm curr_time = *localtime(&time_dump);
-    char buffer[80];
-    strftime(buffer, 80, "%m/%d/%Y %I:%M:%S%p", &curr_time);
-    return String(buffer);
+  return end_loc;
 }
 
-void Process::createFile()
+void Process::MemAlloc(size_t start_loc, size_t end_loc)
 {
-    this->deleteFile();
-    std::ofstream log_file(this->name + ".txt", std::ios::app);
-    // If the file is new, write the header
-        log_file << "Process name: " << this->getProcessName() << "\n";
-        log_file << "Logs:" << "\n" << "\n";
-    // Log the print command with timestamp and core info
-    // log_file << "(" << this->getTimeToStr() << ") Core:" <<  " \"" << message << "\"" << endl;
-    log_file.close();
+  this->start_loc = start_loc;
+  this->end_loc = end_loc;
 }
 
-void Process::deleteFile() 
+// Generates a random number of print commands for the process.
+void Process::generatePrintCommands(int min_instructions, int max_instructions)
 {
-    String filePath = this->name + ".txt";
-    // std::filesystem::path path(filePath);
-    int status = std::remove(filePath.c_str());
-    // if (status != 0) {
-    //   std::cerr << "Error deleting file";
-    // }
-}
+  // Create a random number generator
+  std::random_device rd;  // Obtain a random number from hardware
+  std::mt19937 gen(rd()); // Seed the generator
 
-void Process::executeCurrCommand() const
-{
-    this->command_list[this->command_counter]->execute();
-}
+  // Create a uniform distribution in the range [lower, upper]
+  std::uniform_int_distribution<> distrib(min_instructions, max_instructions);
 
+  // Generate a random number
+  int num_commands = distrib(gen);
 
-void Process::moveToNextLine()
-{
-    this->command_counter++;
-}
-
-Process::ProcessState Process::getCurrState()
-{
-  return this->curr_state;
+  // Create the print commands and add them to the command list.
+  for (int i = 1; i <= num_commands; ++i)
+  {
+    // Create a new PrintCommand and add it to the command list.
+    std::shared_ptr<ICommand> cmd = std::make_shared<PrintCommand>(
+        process_id, core_id, "Hello World From " + process_name + " started.", process_name);
+    command_list.push_back(cmd);
+  }
 }
