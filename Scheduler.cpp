@@ -242,9 +242,9 @@ void Scheduler::scheduleRR(int core_id)
         process_queue.pop();   // Remove it from the queue.
       } else {
         // std::cout <<" Insufficient memory for process " << process->getName() << "(ID: " << process->getPID() << ")\n";
-        // else statment is when memory is insufficient, therefore we cannot execute the process and just loop again.
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        continue;
+        // else statment is when memory is insufficient, therefore we cannot execute the process then put it back at the ready queue
+        process_queue.pop();
+        process_queue.push(process);
       }
     }
     // std::cout << "Current Process: " << process->getName() << " in_memory: " << process->isAllocated() << "\n";
@@ -334,11 +334,10 @@ void Scheduler::scheduleRR(int core_id)
       }
       else
       {
-        // MemoryManager::getInstance().getAllocator()->deallocate(process);
         process->setState(Process::ProcessState::FINISHED); // Set the process state to FINISHED.
+        MemoryManager::getInstance().getAllocator()->deallocate(process);
       }
 
-      MemoryManager::getInstance().getAllocator()->deallocate(process);
 
       std::lock_guard<std::mutex> lock(active_threads_mutex);
       active_threads--; // Decrement the active thread count.
@@ -346,8 +345,6 @@ void Scheduler::scheduleRR(int core_id)
       logActiveThreads(core_id, nullptr); // Log the thread state after completion.
       queue_condition.notify_all(); // Notify other threads of availability.
       CoreStateManager::getInstance().flipCoreState(core_id, ""); // Mark the core as idle.
-    } else {
-      continue;
     } 
   }
 }
